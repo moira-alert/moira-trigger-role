@@ -1,2 +1,101 @@
 # moira-trigger-role
-Ansible role to create, update and delete Moira triggers
+
+Ansible role to create, update and delete Moira triggers based on
+[python-moira-client](https://github.com/moira-alert/python-moira-client)
+
+## Role usage
+
+[Configuration](#configuration)
+-   [Authentication](#authentication)
+-   [Trigger state](#trigger-state)
+-   [Role variables](#role-variables)
+
+[Role tasks](#role-tasks)
+-   [Manage dependencies](#manage-dependencies)
+-   [Manage triggers](#manage-triggers)
+
+## <a name="configuration"></a> Configuration
+
+Clone this repository into your roles directory:
+
+```
+cd /path/to/roles
+git clone https://github.com/moira-alert/moira-trigger-role
+```
+
+### <a name="authentication"></a> Authentication
+
+Authentication parameters can be specified inside */defaults/main.yml*
+
+| Parameter | Description | Type | Required | Choices | Default | Example |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| api_url | Url of Moira API | String | True | | | <http://localhost/api/> |
+| auth_custom | Custom authorization headers | Dictionary | False | | None | 'X-Webauth-User': 'admin' |
+| auth_user | Auth User  (Basic Auth) | String | False | | None | admin |
+| auth_pass | Auth Password  (Basic Auth) | String | False | | None | pass |
+
+### <a name="trigger-state"></a> Trigger state
+
+Trigger parameters can be defined inside */vars/main.yml*
+
+| Parameter | Description | Type | Required | Choices | Default | Example |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| state | Desired state of a trigger | String | True | present <br> absent |  | present |
+| id | Trigger id | String | True | | | trigger_1 |
+| name | Trigger name | String | True | | | Trigger 1 |
+| tags | List of trigger tags | List | True | | | - 'Project' <br> - 'Service' |
+| targets | List of trigger targets <br> [See available graphite functions](https://github.com/go-graphite/carbonapi/blob/master/COMPATIBILITY.md#functions) | List | True | | | - prefix.*.postfix |
+| warn_value | Value to set WARN status | Float | True | | None | 300 |
+| error_value | Value to set ERROR status | Float | True | | None | 600 |
+| ttl | Time to Live (in seconds) | Int | False | | 600 | 600 |
+| ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
+| desc | Trigger description | String | False | | | trigger test description |
+| expression | [Golang expression](https://github.com/Knetic/govaluate) | String | False | | | 't1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK)' |
+| disabled_days | Days for trigger to be in silent mode | Set | False | | | ? Mon <br> ? Wed |
+
+> **Note:** By default, file contains examples of triggers with LoadAverage, MemoryFree and DiskSpace <br>
+> targets of most commonly used [Diamond](https://github.com/python-diamond/Diamond) collectors
+
+### <a name="role-variables"></a> Role variables
+
+Next, pass following variables to role inside playbook:
+
+| Variable | Description | Type | Required | Choices | Default | Example |
+| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
+| dry_run | Run in check mode | Boolean | False | True <br> False | True |
+| project | Graphite metric prefix | String | True | | | 'DevOps' |
+| service | Graphite metric | String | True | | | 'system' |
+
+```
+- hosts: inventory_hostgroup
+  roles:
+   - { role: moira_trigger, dry_run: False, project: DevOps, service: system }
+```
+
+## <a name="role-tasks"></a> Role tasks
+
+### <a name="manage-dependencies"></a> Manage dependencies
+
+Task to check [python-moira-client](https://github.com/moira-alert/python-moira-client) is  installed (via pip)
+
+### <a name="manage-triggers"></a> Manage triggers
+
+Use state 'present' to create and edit existing triggers:
+
+```
+ - name: create trigger
+   moira_trigger:
+      ...
+      state: present
+      ...  
+```
+
+To delete existing triggers use state 'absent':
+
+```
+ - name: remove trigger
+   moira_trigger:
+      ...
+      state: absent
+      ...  
+```

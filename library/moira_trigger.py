@@ -59,6 +59,11 @@ options:
       - Auth Password.
     required: False
     default: None
+  login:
+    description:
+      - Auth Login.
+    required: False
+    default: None
   state:
     description:
       - Desired state of a trigger.
@@ -92,7 +97,7 @@ options:
     choices: ['NODATA', 'ERROR', 'WARN', 'OK']
   expression:
     description:
-      - Golang expression.
+      - C-like expression.
     required: False
     default: ''
   disabled_days:
@@ -195,6 +200,10 @@ fields = {
         'required': False,
         'default': None,
         'no_log': True},
+    'login': {
+        'type': 'str',
+        'required': False,
+        'dafault': None},
     'state': {
         'type': 'str',
         'required': True,
@@ -247,7 +256,8 @@ moira_api = Moira(
     api_url=module.params['api_url'],
     auth_custom=module.params['auth_custom'],
     auth_user=module.params['auth_user'],
-    auth_pass=module.params['auth_pass'])
+    auth_pass=module.params['auth_pass'],
+    login=module.params['login'])
 
 preimage = {
     'id': module.params['id'],

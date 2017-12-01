@@ -30,9 +30,10 @@ Authentication parameters can be specified inside */defaults/main.yml*
 | Parameter | Description | Type | Required | Choices | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
 | api_url | Url of Moira API | String | True | | | <http://localhost/api/> |
-| auth_custom | Custom authorization headers | Dictionary | False | | None | 'X-Webauth-User': 'admin' |
-| auth_user | Auth User  (Basic Auth) | String | False | | None | admin |
-| auth_pass | Auth Password  (Basic Auth) | String | False | | None | pass |
+| auth_custom | Custom authorization headers | Dictionary | False | | None | 'Accept': 'application/json' |
+| auth_user | Auth User (Basic Auth) | String | False | | None | admin |
+| auth_pass | Auth Password (Basic Auth) | String | False | | None | pass |
+| login | Auth Login (Basic Auth) | String | False | | None | admin |
 
 ### <a name="trigger-state"></a> Trigger state
 
@@ -50,7 +51,7 @@ Trigger parameters can be defined inside */vars/main.yml*
 | ttl | Time to Live (in seconds) | Int | False | | 600 | 600 |
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
 | desc | Trigger description | String | False | | | trigger test description |
-| expression | [Golang expression](https://github.com/Knetic/govaluate) | String | False | | | 't1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK)' |
+| expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | | | 't1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK)' |
 | disabled_days | Days for trigger to be in silent mode | Set | False | | | ? Mon <br> ? Wed |
 
 > **Note:** By default, file contains examples of triggers with LoadAverage, MemoryFree and DiskSpace <br>

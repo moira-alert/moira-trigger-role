@@ -30,7 +30,7 @@ Authentication parameters can be specified inside */defaults/main.yml*
 | Parameter | Description | Type | Required | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ |
 | api_url | Url of Moira API | String | True | | <http://localhost/api/> |
-| auth_custom | Custom authorization headers | Dictionary | False | None | 'Accept': 'application/json' |
+| auth_custom | Custom authorization headers | Dictionary | False | None | Accept: application/json |
 | auth_user | Auth User (Basic Auth) | String | False | None | admin |
 | auth_pass | Auth Password (Basic Auth) | String | False | None | pass |
 | login | Auth Login (Basic Auth) | String | False | None | admin |

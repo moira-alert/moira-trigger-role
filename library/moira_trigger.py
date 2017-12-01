@@ -203,7 +203,7 @@ fields = {
     'login': {
         'type': 'str',
         'required': False,
-        'dafault': None},
+        'default': None},
     'state': {
         'type': 'str',
         'required': True,

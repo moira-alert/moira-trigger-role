@@ -3,11 +3,11 @@ deploy:
   - id: '{{ project | lower }}_{{ service | lower }}_loadaverage'
     name: '{{ project }}.{{ service }}.LoadAverage'
     targets:
-      - '{{ project | lower }}.{{ service | lower }}.*.loadavg.load'
+      - '{{ project | lower }}.{{ service | lower }}.*.loadavg.load_normalized'
     tags:
       - '{{ project }}'
-    warn_value: 60
-    error_value: 80
+    warn_value: 0.8
+    error_value: 1
     desc: 'This trigger has been created using Ansible Moira library'
 
   - id: '{{ project | lower }}_{{ service | lower }}_memoryfree'

@@ -1,0 +1,8 @@
+- name: Test role using fake api
+  hosts: localhost
+  vars:
+    project: testProject
+    service: testService
+    dry_run: False
+  roles:
+    - moira-trigger-role

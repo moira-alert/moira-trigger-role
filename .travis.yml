@@ -16,7 +16,7 @@ before_script:
  - sudo service fake_api start
 
 script:
- - ansible-playbook -i inventory --connection=local --sudo -v /test/fake_api.yml
+ - ansible-playbook -vvv /test/fake_api.yml
 
 after_script:
  - sudo service fake_api stop

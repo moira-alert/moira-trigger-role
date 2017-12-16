@@ -9,7 +9,7 @@ import logging
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
-PORT = 80
+PORT = 8081
 
 
 class MoiraApiHandler(BaseHTTPRequestHandler):

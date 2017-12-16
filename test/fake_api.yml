@@ -1,5 +1,6 @@
 - name: Test role using fake api
   hosts: localhost
+  connection: local
   vars:
     project: testProject
     service: testService

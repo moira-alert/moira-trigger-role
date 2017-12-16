@@ -1,1 +1,1 @@
-moira_api: https://localhost/api
+moira_api: http://localhost:8081/api

@@ -12,7 +12,7 @@
     error_value: '{{ item.error_value }}'
     #pass not required trigger parameters
     desc: '{{ item.desc }}'
-    #be sure parameters passed correctly
+  #be sure parameters passed correctly
   check_mode: '{{ dry_run | default(True) }}'
   with_items:
     - '{{ deploy }}'

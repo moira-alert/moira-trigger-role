@@ -5,7 +5,6 @@
 '''
 
 import json
-import logging
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 
@@ -30,7 +29,7 @@ class MoiraApiHandler(BaseHTTPRequestHandler):
             trigger_id = api_trigger_path[2]
             state = '{"trigger_id":"%s"}' % trigger_id
 
-            logging.info(
+            self.log_message(
                 'Handling: MoiraTrigger.has_image for %s' % trigger_id)
 
             self.wfile.write(state.encode())
@@ -38,7 +37,7 @@ class MoiraApiHandler(BaseHTTPRequestHandler):
         if self.path.endswith('tag'):
 
             taglist = '{"list":"[]"}'
-            logging.info(
+            self.log_message(
                 'Handling: main.tag_cleanup')
 
             self.wfile.write(taglist.encode())
@@ -57,7 +56,7 @@ class MoiraApiHandler(BaseHTTPRequestHandler):
 
             testid = post_dict['id']
             response = '{"id":"%s"}' % testid
-            logging.info(
+            self.log_message(
                 'Handling: MoiraTriggerManager.edit for %s' % testid)
 
             self.wfile.write(response.encode())
@@ -65,5 +64,5 @@ class MoiraApiHandler(BaseHTTPRequestHandler):
 if __name__ == "__main__":
 
     server = HTTPServer(('localhost', PORT), MoiraApiHandler)
-    logging.info('Starting fake api on port %s' % PORT)
+    print('Starting fake api on port %s' % PORT)
     server.serve_forever()

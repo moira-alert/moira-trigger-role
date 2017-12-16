@@ -1,9 +1,15 @@
+[![Build Status](https://travis-ci.org/moira-alert/moira-trigger-role.svg?branch=master)](https://travis-ci.org/moira-alert/moira-trigger-role)
+
 # moira-trigger-role
 
 Ansible role to create, update and delete Moira triggers based on
 [python-moira-client](https://github.com/moira-alert/python-moira-client)
 
 ## Role usage
+
+[Installation](#installation)
+-   [Ansible Galaxy](#ansible-galaxy)
+-   [Git clone](#git-clone)
 
 [Configuration](#configuration)
 -   [Authentication](#authentication)
@@ -14,7 +20,15 @@ Ansible role to create, update and delete Moira triggers based on
 -   [Manage dependencies](#manage-dependencies)
 -   [Manage triggers](#manage-triggers)
 
-## <a name="configuration"></a> Configuration
+## <a name="installation"></a> Installation
+
+### <a name="ansible-galaxy"></a> Ansible Galaxy
+
+```
+ansible-galaxy install moira-alert.moira-trigger-role
+```
+
+### <a name="git-clone"></a> Git clone
 
 Clone this repository into your roles directory:
 
@@ -22,6 +36,8 @@ Clone this repository into your roles directory:
 cd /path/to/roles
 git clone https://github.com/moira-alert/moira-trigger-role
 ```
+
+## <a name="configuration"></a> Configuration
 
 ### <a name="authentication"></a> Authentication
 

@@ -1,0 +1,11 @@
+galaxy_info:
+  author: moira-alert
+  description: Ansible role to create, update and delete Moira triggers
+  company: SKB Kontur
+  license: MIT
+  min_ansible_version: 2.3
+  galaxy_tags:
+    - moira
+    - monitoring
+    - alerting
+    - graphite

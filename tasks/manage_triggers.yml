@@ -1,0 +1,20 @@
+- name: create triggers on deploy
+  moira_trigger:
+    #initialize moira_client
+    api_url: '{{ moira_api }}'
+    #pass required trigger parameters
+    state: present
+    id: '{{ item.id }}'
+    name: '{{ item.name }}'
+    targets: '{{ item.targets }}'
+    tags: '{{ item.tags }}'
+    warn_value: '{{ item.warn_value }}'
+    error_value: '{{ item.error_value }}'
+    #pass not required trigger parameters
+    desc: '{{ item.desc }}'
+  #be sure parameters passed correctly
+  check_mode: '{{ dry_run | default(True) }}'
+  with_items:
+    - '{{ deploy }}'
+  tags:
+    - deploy

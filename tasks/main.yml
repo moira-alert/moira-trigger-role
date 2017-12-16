@@ -1,0 +1,2 @@
+- include: manage_dependencies.yml
+- include: manage_triggers.yml

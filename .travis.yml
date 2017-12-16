@@ -1,0 +1,23 @@
+sudo: required
+dist: trusty
+
+matrix:
+  include:
+    - env: ANSIBLE_VERSION=2.3.2
+    - env: ANSIBLE_VERSION=2.4.2
+
+before_script:
+ - sudo apt-get -y install software-properties-common
+ - sudo apt-get -y install python-pip
+ - sudo pip install ansible==$ANSIBLE_VERSION
+ - ansible --version
+ - sudo ansible-galaxy install moira-alert.moira-trigger-role
+ - cp /test/fake_api.conf /etc/init/fake_api.conf
+ - sudo service fake_api start
+
+script:
+ - ansible-playbook -vvv /test/fake_api.yml
+
+after_script:
+ - sudo service fake_api stop
+ - cat /var/log/upstart/fake_api.log

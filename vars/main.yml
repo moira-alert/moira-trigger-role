@@ -1,0 +1,31 @@
+deploy:
+
+  - id: '{{ project | lower }}_{{ service | lower }}_loadaverage'
+    name: '{{ project }}.{{ service }}.loadAverage'
+    targets:
+      - '{{ project | lower }}.{{ service | lower }}.*.loadavg.load_normalized'
+    tags:
+      - '{{ project }}'
+    warn_value: 0.8
+    error_value: 1
+    desc: 'This trigger has been created using Ansible Moira library'
+
+  - id: '{{ project | lower }}_{{ service | lower }}_memoryfree'
+    name: '{{ project }}.{{ service }}.memoryFree'
+    targets:
+      - '{{ project | lower }}.{{ service | lower }}.*.memory.MemFree'
+    tags:
+      - '{{ project }}'
+    warn_value: 524288000
+    error_value: 262144000
+    desc: 'This trigger has been created using Ansible Moira library'
+
+  - id: '{{ project | lower }}_{{ service | lower }}_freediskspace'
+    name: '{{ project }}.{{ service }}.freeDiskSpace'
+    targets:
+      - '{{ project | lower }}.{{ service | lower }}.*.disk.*.gigabyte_percentfree'
+    tags:
+      - '{{ project }}'
+    warn_value: 30
+    error_value: 15
+    desc: 'This trigger has been created using Ansible Moira library'

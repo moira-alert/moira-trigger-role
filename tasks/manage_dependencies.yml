@@ -1,0 +1,2 @@
+- name: be sure moira-client is installed
+  pip: name=moira-client state=present

@@ -33,8 +33,8 @@ ansible-galaxy install moira-alert.moira-trigger-role
 Clone this repository into your roles directory:
 
 ```
-cd /path/to/roles
-git clone https://github.com/moira-alert/moira-trigger-role
+cd /etc/ansible/roles && rolepath=moira-alert.moira-trigger-role
+git clone https://github.com/moira-alert/moira-trigger-role $rolepath
 ```
 
 ## <a name="configuration"></a> Configuration
@@ -57,18 +57,18 @@ Trigger parameters can be defined inside */vars/main.yml*
 
 | Parameter | Description | Type | Required | Choices | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| state | Desired state of a trigger | String | True | present <br> absent |  | present |
-| id | Trigger id | String | True | | | trigger_1 |
-| name | Trigger name | String | True | | | Trigger 1 |
-| tags | List of trigger tags | List | True | | | - 'Project' <br> - 'Service' |
-| targets | List of trigger targets <br> [See available graphite functions](https://github.com/go-graphite/carbonapi/blob/master/COMPATIBILITY.md#functions) | List | True | | | - prefix.*.postfix |
-| warn_value | Value to set WARN status | Float | True | | None | 300 |
-| error_value | Value to set ERROR status | Float | True | | None | 600 |
-| ttl | Time to Live (in seconds) | Int | False | | 600 | 600 |
+| state | Desired state of a trigger | String | True | present <br> absent | N/A | present |
+| id | Trigger id | String | True | N/A | N/A | trigger_1 |
+| name | Trigger name | String | True | N/A | N/A | Trigger 1 |
+| tags | List of trigger tags | List | True | N/A | Empty list | - Project <br> - Service |
+| targets | List of trigger targets <br> [See available graphite functions](https://github.com/go-graphite/carbonapi/blob/master/COMPATIBILITY.md#functions) | List | True | N/A | Empty list | - prefix.*.postfix |
+| warn_value | Value to set WARN status | Float | True | N/A | None | 300 |
+| error_value | Value to set ERROR status | Float | True | N/A | None | 600 |
+| ttl | Time to Live (in seconds) | Int | False | N/A | 600 | 600 |
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
-| desc | Trigger description | String | False | | | trigger test description |
-| expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | | | 't1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK)' |
-| disabled_days | Days for trigger to be in silent mode | Set | False | | | ? Mon <br> ? Wed |
+| desc | Trigger description | String | False | N/A | Empty string | trigger test description |
+| expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
+| disabled_days | Days for trigger to be in silent mode | Set | False | N/A | N/A | ? Mon <br> ? Wed |
 
 > **Note:** By default, file contains examples of triggers with LoadAverage, MemoryFree and DiskSpace <br>
 > targets of most commonly used [Diamond](https://github.com/python-diamond/Diamond) collectors
@@ -79,14 +79,18 @@ Next, pass following variables to role inside playbook:
 
 | Variable | Description | Type | Required | Choices | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| dry_run | Run in check mode | Boolean | False | True <br> False | True |
-| project | Graphite metric prefix | String | True | | | 'DevOps' |
-| service | Graphite metric | String | True | | | 'system' |
+| dry_run | Run in check mode | Boolean | False | True <br> False | True | False |
+| project | Graphite metric prefix | String | True | N/A | N/A | DevOps |
+| service | Graphite metric | String | True | N/A | N/A | system |
 
 ```
 - hosts: inventory_hostgroup
+  vars:
+    project: DevOps
+    service: system
+    dry_run: False
   roles:
-   - { role: moira_trigger, dry_run: False, project: DevOps, service: system }
+   - moira-alert.moira_trigger-role
 ```
 
 ## <a name="role-tasks"></a> Role tasks

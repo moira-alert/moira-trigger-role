@@ -161,11 +161,6 @@ result:
   returned: always
   type: dict
   sample: {'test2': 'trigger has been created'}
-warnings:
-  description: unused tags has been removed
-  returned: when found
-  type: list
-  sample: ['tags removed: first_tag, second_tag']
 '''
 
 from functools import wraps
@@ -364,28 +359,6 @@ class MoiraTriggerManager(object):
         self.dry_run = dry_run
 
     @handle_exception
-    def tag_cleanup(self):
-
-        '''Remove unused tags.
-
-        Returns:
-            Removed tags names when removed, None otherwise.
-
-        '''
-
-        tags_removed = set()
-
-        if not self.dry_run:
-
-            for tag in moira_api.tag.stats():
-                if not tag.triggers:
-                    tags_removed.add(tag.name)
-                    moira_api.tag.delete(tag.name)
-
-        if tags_removed:
-            return 'tags removed: ' + ', '.join(tag for tag in tags_removed)
-
-    @handle_exception
     def remove(self, moira_trigger):
 
         '''Remove trigger if exists.
@@ -471,30 +444,17 @@ def main():
 
     '''
 
-    warnings = []
-
     manager = MoiraTriggerManager(dry_run=module.check_mode)
     trigger = MoiraTrigger(trigger_preimage=preimage)
 
     result = manager.define_state(
         state=module.params['state'], moira_trigger=trigger)
 
-    tag_cleanup = manager.tag_cleanup()
-
-    if tag_cleanup is not None:
-
-        if 'failed' in tag_cleanup:
-            warnings.append(
-                'Unable to remove unused tags. '
-                'Tags can be removed on the next module execution.')
-        else:
-            warnings.append(tag_cleanup)
-
     if 'failed' in result:
         module.fail_json(msg='Unable to define trigger state', meta=result)
 
     else:
-        module.exit_json(changed=True, result=result, warnings=warnings)
+        module.exit_json(changed=True, result=result)
 
 
 if __name__ == '__main__':

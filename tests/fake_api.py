@@ -34,14 +34,6 @@ class MoiraApiHandler(BaseHTTPRequestHandler):
 
             self.wfile.write(state.encode())
 
-        if self.path.endswith('tag'):
-
-            taglist = '{"list":"[]"}'
-            self.log_message(
-                'Handling: main.tag_cleanup')
-
-            self.wfile.write(taglist.encode())
-
     def do_PUT(self):
 
         self.send_response(200)

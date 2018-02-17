@@ -45,7 +45,7 @@ Authentication parameters can be specified inside */defaults/main.yml*
 
 | Parameter | Description | Type | Required | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ |
-| api_url | Url of Moira API | String | True | | <http://localhost/api/> |
+| api_url | Url of Moira API | String | True | N/A | <http://localhost/api/> |
 | auth_custom | Custom authorization headers | Dictionary | False | None | Authorization: token |
 | auth_user | Auth User (Basic Auth) | String | False | None | admin |
 | auth_pass | Auth Password (Basic Auth) | String | False | None | pass |
@@ -69,6 +69,10 @@ Trigger parameters can be defined inside */vars/main.yml*
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
 | expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
 | disabled_days | Days for trigger to be in silent mode | Set | False | N/A | N/A | ? Mon <br> ? Wed |
+| start_hour | Start hour to send alerts | Int | False | N/A | 0 | 9 |
+| start_minute | Start minute to send alerts | Int | False | N/A | 0 | 0 |
+| end_hour | End hour to send alerts | Int | False | N/A | 23 | 17 |
+| end_minute | End minute to send alerts | Int | False | N/A | 59 | 0 |
 
 > **Note:** By default, file contains examples of triggers with LoadAverage, MemoryFree and DiskSpace <br>
 > targets of most commonly used [Diamond](https://github.com/python-diamond/Diamond) collectors

@@ -121,6 +121,26 @@ options:
     description:
       - Value to set ERROR status.
     required: True
+  start_hour:
+    description:
+      - Start hour to send alerts.
+    required: False
+    default: 0
+  start_minute:
+    description:
+      - Start minute to send alerts.
+    required: False
+    default: 0
+  end_hour:
+    description:
+      - End hour to send alerts.
+    required: False
+    default: 23
+  end_minute:
+    description:
+      - End minute to send alerts.
+    required: False
+    default: 59
 notes:
     - More details at https://github.com/moira-alert/moira-trigger-role.
 '''
@@ -241,7 +261,23 @@ fields = {
         'required': True},
     'error_value': {
         'type': 'float',
-        'required': True}}
+        'required': True},
+    'start_hour': {
+        'type': 'int',
+        'required': False,
+        'default': 0},
+    'start_minute': {
+        'type': 'int',
+        'required': False,
+        'default': 0},
+    'end_hour': {
+        'type': 'int',
+        'required': False,
+        'default': 23},
+    'end_minute': {
+        'type': 'int',
+        'required': False,
+        'default': 59}}
 
 module = AnsibleModule(
     argument_spec=fields,
@@ -268,7 +304,11 @@ preimage = {
     'expression': module.params['expression'],
     'disabled_days': module.params['disabled_days'],
     'desc': module.params['desc'],
-    'tags': module.params['tags']}
+    'tags': module.params['tags'],
+    '_start_hour': module.params['start_hour'],
+    '_start_minute': module.params['start_minute'],
+    '_end_hour': module.params['end_hour'],
+    '_end_minute': module.params['end_minute']}
 
 
 def handle_exception(function):
@@ -337,12 +377,23 @@ class MoiraTrigger(object):
         Args:
             image (dict): trigger image.
 
+        Returns:
+            True if merged, False otherwise.
+
         '''
+
+        score = 0
 
         for field in self.preimage:
             if not field == 'id' and \
                not image.__dict__[field] == self.preimage[field]:
                 image.__dict__[field] = self.preimage[field]
+                score += 1
+
+        if score != 0:
+            return True
+
+        return False
 
 
 class MoiraTriggerManager(object):
@@ -357,6 +408,7 @@ class MoiraTriggerManager(object):
     def __init__(self, dry_run):
 
         self.dry_run = dry_run
+        self.has_diff = False
 
     @handle_exception
     def remove(self, moira_trigger):
@@ -364,7 +416,7 @@ class MoiraTriggerManager(object):
         '''Remove trigger if exists.
 
         Args:
-            moira_trigger (class): moira trigger.
+            moira_trigger (object): moira trigger.
 
         Returns:
             JSON with trigger id and trigger state on success,
@@ -375,9 +427,9 @@ class MoiraTriggerManager(object):
         if not moira_trigger.has_image():
             return {moira_trigger._id: 'no id found for trigger'}
 
-        if not self.dry_run:
-            moira_api.trigger.delete(
-                moira_trigger._id)
+        if not self.dry_run and \
+           moira_api.trigger.delete(moira_trigger._id):
+            self.has_diff = True
 
         return {moira_trigger._id: 'trigger has been removed'}
 
@@ -387,7 +439,7 @@ class MoiraTriggerManager(object):
         '''Edit existing trigger.
 
         Args:
-            moira_trigger (class): moira trigger.
+            moira_trigger (object): moira trigger.
 
         Returns:
             JSON with trigger id and trigger state on success,
@@ -403,6 +455,7 @@ class MoiraTriggerManager(object):
             result = 'trigger has been created'
 
             if not self.dry_run:
+                self.has_diff = True
                 trigger.save()
 
         else:
@@ -410,8 +463,9 @@ class MoiraTriggerManager(object):
             trigger = moira_trigger.image
             result = 'trigger has been updated'
 
-        if not self.dry_run:
-            moira_trigger.merge_with(trigger)
+        if not self.dry_run and \
+           moira_trigger.merge_with(trigger):
+            self.has_diff = True
             trigger.update()
 
         return {moira_trigger._id: result}
@@ -423,7 +477,7 @@ class MoiraTriggerManager(object):
 
         Args:
             state (str): desired trigger state.
-            moira_trigger (class): moira trigger.
+            moira_trigger (object): moira trigger.
 
         Returns:
             JSON with trigger id and trigger state on success,
@@ -454,7 +508,7 @@ def main():
         module.fail_json(msg='Unable to define trigger state', meta=result)
 
     else:
-        module.exit_json(changed=True, result=result)
+        module.exit_json(changed=manager.has_diff, result=result)
 
 
 if __name__ == '__main__':

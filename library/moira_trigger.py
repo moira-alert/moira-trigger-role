@@ -104,7 +104,6 @@ options:
     description:
       - Days for trigger to be in silent mode.
     required: False
-    default: {}
   targets:
     description:
       - List of trigger targets.
@@ -248,8 +247,7 @@ fields = {
         'default': ''},
     'disabled_days': {
         'type': 'dict',
-        'required': False,
-        'default': {}},
+        'required': False},
     'targets': {
         'type': 'list',
         'required': True},
@@ -302,7 +300,6 @@ preimage = {
     'ttl': module.params['ttl'],
     'ttl_state': module.params['ttl_state'],
     'expression': module.params['expression'],
-    'disabled_days': module.params['disabled_days'],
     'desc': module.params['desc'],
     'tags': module.params['tags'],
     '_start_hour': module.params['start_hour'],
@@ -310,6 +307,8 @@ preimage = {
     '_end_hour': module.params['end_hour'],
     '_end_minute': module.params['end_minute']}
 
+if module.params['disabled_days']:
+    preimage['disabled_days'] = module.params['disabled_days']
 
 def handle_exception(function):
 

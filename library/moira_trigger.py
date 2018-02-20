@@ -383,8 +383,10 @@ class MoiraTrigger(object):
 
         score = 0
 
-        preimage['tags'].sort()
+        preimage['tags'].sort() 
         image.__dict__['tags'].sort()
+
+        preimage['desc'] = preimage['desc'].decode("utf-8")
 
         for field in self.preimage:
             if not field == 'id' and \

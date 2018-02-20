@@ -386,6 +386,7 @@ class MoiraTrigger(object):
         preimage['tags'].sort()
         image.__dict__['tags'].sort()
 
+        preimage['name'] = preimage['name'].decode("utf-8")
         preimage['desc'] = preimage['desc'].decode("utf-8")
 
         for field in self.preimage:

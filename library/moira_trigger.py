@@ -383,6 +383,9 @@ class MoiraTrigger(object):
 
         score = 0
 
+        preimage['tags'].sort()
+        image.__dict__['tags'].sort()
+
         for field in self.preimage:
             if not field == 'id' and \
                not image.__dict__[field] == self.preimage[field]:

@@ -310,6 +310,7 @@ preimage = {
 if module.params['disabled_days']:
     preimage['disabled_days'] = module.params['disabled_days']
 
+
 def handle_exception(function):
 
     '''Handling occurred exceptions.
@@ -383,11 +384,11 @@ class MoiraTrigger(object):
 
         score = 0
 
-        preimage['tags'].sort()
+        self.preimage['tags'].sort()
         image.__dict__['tags'].sort()
 
-        preimage['name'] = preimage['name'].decode("utf-8")
-        preimage['desc'] = preimage['desc'].decode("utf-8")
+        for field in 'name', 'desc':
+            self.preimage[field] = preimage[field].decode("utf-8")
 
         for field in self.preimage:
             if not field == 'id' and \

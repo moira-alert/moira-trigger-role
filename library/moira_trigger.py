@@ -115,11 +115,13 @@ options:
   warn_value:
     description:
       - Value to set WARN status.
-    required: True
+    required: False
+    default: None
   error_value:
     description:
       - Value to set ERROR status.
-    required: True
+    required: False
+    default: None
   start_hour:
     description:
       - Start hour to send alerts.
@@ -256,10 +258,12 @@ fields = {
         'required': True},
     'warn_value': {
         'type': 'float',
-        'required': True},
+        'required': False,
+        'default': None},
     'error_value': {
         'type': 'float',
-        'required': True},
+        'required': False,
+        'default': None},
     'start_hour': {
         'type': 'int',
         'required': False,

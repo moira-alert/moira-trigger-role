@@ -62,8 +62,8 @@ Trigger parameters can be defined inside */vars/main.yml*
 | name | Trigger name | String | True | N/A | N/A | Trigger 1 |
 | tags | List of trigger tags | List | True | N/A | Empty list | - Project <br> - Service |
 | targets | List of trigger targets <br> [See available graphite functions](https://github.com/go-graphite/carbonapi/blob/master/COMPATIBILITY.md#functions) | List | True | N/A | Empty list | - prefix.*.postfix |
-| warn_value | Value to set WARN status | Float | True | N/A | None | 300 |
-| error_value | Value to set ERROR status | Float | True | N/A | None | 600 |
+| warn_value | Value to set WARN status | Float | False | N/A | None | 300 |
+| error_value | Value to set ERROR status | Float | False | N/A | None | 600 |
 | ttl | Time to Live (in seconds) | Int | False | N/A | 600 | 600 |
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |

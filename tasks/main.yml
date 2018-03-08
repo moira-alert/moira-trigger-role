@@ -1,4 +1,4 @@
 # Check python-moira-client is installed (via pip)
 - include: manage_dependencies.yml
-# Manage triggers
+# Manage moira triggers
 - include: manage_triggers.yml

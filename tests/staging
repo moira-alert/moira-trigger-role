@@ -1,0 +1,5 @@
+[serviceName]
+127.0.0.1
+
+[staging:children]
+serviceName

@@ -1,1 +1,15 @@
-moira_api: http://localhost:8081/api
+# Authentication parameters
+# moira_api: http://localhost:8081/api
+
+# Use moira_auth_custom if you're using additional authentication
+# mechanisms instead of single basic auth
+# moira_auth_custom:
+#   Authorization: apiKey
+
+# Use moira_auth_user, moira_auth_pass and moira_auth_login if you're using
+# single basic auth (ex.: using proxy_set_header X-Webauth-User in nginx config)
+# moira_auth_user: admin
+# moira_auth_pass: password
+
+# moira_auth_login must contain value for key X-Webauth-User
+# moira_auth_login: admin

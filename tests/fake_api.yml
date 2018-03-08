@@ -1,8 +1,0 @@
-- name: Test role using fake api
-  hosts: all
-  vars:
-    project: testProject
-    service: testService
-    dry_run: False
-  roles:
-    - moira-alert.moira-trigger-role

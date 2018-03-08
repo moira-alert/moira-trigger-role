@@ -1,2 +1,7 @@
+# Always use the latest version of python-moira-client
 - name: be sure moira-client is installed
-  pip: name=moira-client state=present
+  pip:
+    name: moira-client
+    state: latest
+  delegate_to:
+    127.0.0.1

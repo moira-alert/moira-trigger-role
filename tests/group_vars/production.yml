@@ -1,0 +1,31 @@
+ServiceNameTriggers:
+
+  - id: ProjectServiceNameLoadAverage
+    name: Project.ServiceName.LoadAverage
+    targets:
+      - Project.ServiceName.*.loadavg.load_normalized
+    expression: "t1 > 1 ? ERROR : (t1 > 0.8 ? WARN : OK)"
+    tags:
+      - Project
+      - DevOps
+    desc: This trigger has been created using Ansible Moira library
+
+  - id: ProjectServiceNameMemoryfree
+    name: Project.ServiceName.MemoryFree
+    targets:
+      - Project.ServiceName.*.memory.MemFree
+    expression: "t1 > 524288000 ? ERROR : OK"
+    tags:
+      - Project
+      - DevOps
+    desc: This trigger has been created using Ansible Moira library
+
+  - id: ProjectServiceNameFreediskspace
+    name: Project.ServiceName.FreeDiskSpace
+    targets:
+      - Project.ServiceName.*.disk.*.gigabyte_percentfree
+    expression: "t1 < 15 ? ERROR : (t1 < 30 ? WARN : OK)"
+    tags:
+      - Project
+      - DevOps
+    desc: This trigger has been created using Ansible Moira library

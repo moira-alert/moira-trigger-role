@@ -13,17 +13,16 @@ before_install:
   - ansible --version
 
 install:
-  - sudo ansible-galaxy install moira-alert.moira-trigger-role
   - sudo mkdir /etc/fake_api/
-  - sudo cp ./tests/fake_api.py /etc/fake_api/fake_api.py
-  - sudo cp ./tests/fake_api.conf /etc/init/fake_api.conf
+  - sudo cp ./tests/files/fake_api.py /etc/fake_api/fake_api.py
+  - sudo cp ./tests/files/fake_api.conf /etc/init/fake_api.conf
 
 before_script:
   - sudo service fake_api start
 
 script:
-  - echo localhost > inventory
-  - ansible-playbook -i inventory --connection=local --sudo -vvv ./tests/fake_api.yml
+  - cd ./tests/
+  - make
 
 after_script:
   - sudo service fake_api stop

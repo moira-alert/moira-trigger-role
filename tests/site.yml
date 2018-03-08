@@ -1,0 +1,7 @@
+- name: test moira-trigger-role using fake api
+  hosts: serviceName
+  roles:
+    - role: moira-alert.moira-trigger-role
+      moira_api: http://localhost:8081/api
+      moira_triggers: '{{ ServiceNameTriggers }}'
+      dry_run: False

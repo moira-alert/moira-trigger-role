@@ -9,12 +9,11 @@ Ansible role to create, update and delete Moira triggers based on
 
 [Installation](#installation)
 -   [Ansible Galaxy](#ansible-galaxy)
--   [Git clone](#git-clone)
+-   [Ansible Role with Makefile](#ansible-role)
 
 [Configuration](#configuration)
 -   [Authentication](#authentication)
 -   [Trigger state](#trigger-state)
--   [Role variables](#role-variables)
 
 [Role tasks](#role-tasks)
 -   [Manage dependencies](#manage-dependencies)
@@ -28,32 +27,42 @@ Ansible role to create, update and delete Moira triggers based on
 ansible-galaxy install moira-alert.moira-trigger-role
 ```
 
-### <a name="git-clone"></a> Git clone
+### <a name="ansible-role"></a> Ansible Role with Makefile
 
-Clone this repository into your roles directory:
+Place the contents from [example](https://github.com/moira-alert/moira-trigger-role/blob/master/tests/Makefile) inside your Makefile to download role from Ansible Galaxy <br>
+and create playbook to manage triggers with predefined parameters inside your vars files:
 
 ```
-cd /etc/ansible/roles && rolepath=moira-alert.moira-trigger-role
-git clone https://github.com/moira-alert/moira-trigger-role $rolepath
+- name: manage moira triggers
+  hosts: serviceName
+  roles:
+    - role: moira-alert.moira-trigger-role
+      moira_api: http://localhost:8081/api
+      moira_triggers: '{{ ServiceNameTriggers }}'
+      dry_run: False
 ```
+
+> **Note:** All actions will be made from your ansible control machine
 
 ## <a name="configuration"></a> Configuration
 
-### <a name="authentication"></a> Authentication
+Predefine following parameters inside your vars files. Working examples can be found [here](https://github.com/moira-alert/moira-trigger-role/tree/master/tests/group_vars)
 
-Authentication parameters can be specified inside */defaults/main.yml*
+### <a name="authentication"></a> Authentication
 
 | Parameter | Description | Type | Required | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ |
 | api_url | Url of Moira API | String | True | N/A | <http://localhost/api/> |
-| auth_custom | Custom authorization headers | Dictionary | False | None | Authorization: token |
+| auth_custom | Custom authorization headers | Dictionary | False | None | Authorization: apiKey |
 | auth_user | Auth User (Basic Auth) | String | False | None | admin |
 | auth_pass | Auth Password (Basic Auth) | String | False | None | pass |
 | login | Auth Login (Basic Auth) | String | False | None | admin |
 
-### <a name="trigger-state"></a> Trigger state
+> **Note:** Use moira_auth_custom if you're using additional authentication mechanisms instead of <br>
+> single basic auth, use moira_auth_user, moira_auth_pass and moira_auth_login otherwise. <br>
+> moira_auth_login must contain value for X-Webauth-User header.
 
-Trigger parameters can be defined inside */vars/main.yml*
+### <a name="trigger-state"></a> Trigger state
 
 | Parameter | Description | Type | Required | Choices | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ | ------ |
@@ -68,34 +77,14 @@ Trigger parameters can be defined inside */vars/main.yml*
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
 | expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
-| disabled_days | Days for trigger to be in silent mode | Set | False | N/A | None | ? Mon <br> ? Wed |
+| disabled_days | Days for trigger to be in silent mode | List | False | N/A | None | - Mon <br> - Wed |
 | start_hour | Start hour to send alerts | Int | False | N/A | 0 | 9 |
 | start_minute | Start minute to send alerts | Int | False | N/A | 0 | 0 |
 | end_hour | End hour to send alerts | Int | False | N/A | 23 | 17 |
 | end_minute | End minute to send alerts | Int | False | N/A | 59 | 0 |
 
 > **Note:** By default, file contains examples of triggers with LoadAverage, MemoryFree and DiskSpace <br>
-> targets of most commonly used [Diamond](https://github.com/python-diamond/Diamond) collectors
-
-### <a name="role-variables"></a> Role variables
-
-Next, pass following variables to role inside playbook:
-
-| Variable | Description | Type | Required | Choices | Default | Example |
-| ------ | ------ | ------ | ------ | ------ | ------ | ------ |
-| dry_run | Run in check mode | Boolean | False | True <br> False | True | False |
-| project | Graphite metric prefix | String | True | N/A | N/A | DevOps |
-| service | Graphite metric | String | True | N/A | N/A | system |
-
-```
-- hosts: inventory_hostgroup
-  vars:
-    project: DevOps
-    service: system
-    dry_run: False
-  roles:
-   - moira-alert.moira_trigger-role
-```
+> targets of most commonly used [Diamond](https://github.com/python-diamond/Diamond) collectors.
 
 ## <a name="role-tasks"></a> Role tasks
 

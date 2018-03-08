@@ -249,7 +249,7 @@ fields = {
         'required': False,
         'default': ''},
     'disabled_days': {
-        'type': 'dict',
+        'type': 'list',
         'required': False,
         'default': None},
     'targets': {
@@ -314,7 +314,7 @@ preimage = {
     '_end_minute': module.params['end_minute']}
 
 if module.params['disabled_days'] is not None:
-    preimage['disabled_days'] = module.params['disabled_days']
+    preimage['disabled_days'] = set(module.params['disabled_days'])
 
 
 def handle_exception(function):

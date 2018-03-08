@@ -1,24 +1,32 @@
-- name: create triggers on deploy
+# Iterate over triggers defined in passed moira_triggers variable
+# with pre-defined default variables
+- name: manage moira triggers
   moira_trigger:
-    api_url: '{{ moira_api }}' ## Url of Moira API (string)
-    # auth_custom: '{{ moira_auth_custom }}' ## Custom authorization headers (dictionary)
-    # auth_user: '{{ moira_auth_user }}' ## Auth User (Basic Auth) (string)
-    # auth_pass: '{{ moira_auth_pass }}' ## Auth Password (Basic Auth) (string)
-    # login: '{{ moira_auth_login }}' ## Auth Login (Basic Auth) (string)
-    state: present ## Desired state of a trigger (string)
-    id: '{{ item.id }}' ## Trigger id (string)
-    name: '{{ item.name }}' ## Trigger name (string)
-    targets: '{{ item.targets }}' ## List of trigger tags (list)
-    tags: '{{ item.tags }}' ## List of trigger targets (list)
-    warn_value: '{{ item.warn_value }}' ## Value to set WARN status (float)
-    error_value: '{{ item.error_value }}' ## Value to set ERROR status (float)
-    # ttl: '{{ item.ttl }}' ## Time to Live (in seconds) (int)
-    # ttl_state: '{{ item.ttl_state }}' ## Trigger state at the expiration of 'ttl' (string)
-    desc: '{{ item.desc }}' ## Trigger description (string)
-    # expression: '{{ item.expression }}' ## C-like expression (string)
-    # disabled_days: '{{ item.disabled_days }}' ## Days for trigger to be in silent mode (set)
+    api_url: '{{ moira_api }}' # Url of Moira API (string)
+    auth_custom: '{{ moira_auth_custom | default(omit) }}' # Custom authorization headers (dictionary)
+    auth_user: '{{ moira_auth_user | default(omit) }}' # Auth User (Basic Auth) (string)
+    auth_pass: '{{ moira_auth_pass | default(omit) }}' # Auth Password (Basic Auth) (string)
+    login: '{{ moira_auth_login | default(omit) }}' # Auth Login (Basic Auth) (string)
+    state: '{{ item.state | default("present") }}' # Desired state of a trigger (string)
+    id: '{{ item.id }}' # Trigger id (string)
+    name: '{{ item.name }}' # Trigger name (string)
+    targets: '{{ item.targets }}' # List of trigger tags (list)
+    tags: '{{ item.tags }}' # List of trigger targets (list)
+    warn_value: '{{ item.warn_value | default(omit) }}' # Value to set WARN status (float)
+    error_value: '{{ item.error_value | default(omit) }}' # Value to set ERROR status (float)
+    ttl: '{{ item.ttl | default(omit) }}' # Time to Live (in seconds) (int)
+    ttl_state: '{{ item.ttl_state | default(omit) }}' # Trigger state at the expiration of 'ttl' (string)
+    desc: '{{ item.desc | default(omit) }}' # Trigger description (string)
+    expression: '{{ item.expression | default(omit) }}' # C-like expression (string)
+    disabled_days: '{{ item.disabled_days | default(omit) }}' # Days for trigger to be in silent mode (list)
+    start_hour: '{{ item.start_hour | default(omit) }}' # Start hour to send alerts (int)
+    start_minute: '{{ item.start_minute | default(omit) }}' # Start minute to send alerts (int)
+    end_hour: '{{ item.end_hour | default(omit) }}' # End hour to send alerts (int)
+    end_minute: '{{ item.end_minute | default(omit) }}' # End minute to send alerts (int)
   check_mode: '{{ dry_run | default(True) }}'
   with_items:
-    - '{{ deploy }}'
+    - '{{ moira_triggers }}'
+  delegate_to:
+    127.0.0.1
   tags:
-    - deploy
+    - moira

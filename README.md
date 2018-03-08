@@ -68,7 +68,7 @@ Trigger parameters can be defined inside */vars/main.yml*
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
 | expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
-| disabled_days | Days for trigger to be in silent mode | Set | False | N/A | N/A | ? Mon <br> ? Wed |
+| disabled_days | Days for trigger to be in silent mode | Set | False | N/A | None | ? Mon <br> ? Wed |
 | start_hour | Start hour to send alerts | Int | False | N/A | 0 | 9 |
 | start_minute | Start minute to send alerts | Int | False | N/A | 0 | 0 |
 | end_hour | End hour to send alerts | Int | False | N/A | 23 | 17 |

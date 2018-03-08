@@ -104,6 +104,7 @@ options:
     description:
       - Days for trigger to be in silent mode.
     required: False
+    default: None
   targets:
     description:
       - List of trigger targets.
@@ -249,7 +250,8 @@ fields = {
         'default': ''},
     'disabled_days': {
         'type': 'dict',
-        'required': False},
+        'required': False,
+        'default': None},
     'targets': {
         'type': 'list',
         'required': True},
@@ -311,7 +313,7 @@ preimage = {
     '_end_hour': module.params['end_hour'],
     '_end_minute': module.params['end_minute']}
 
-if module.params['disabled_days']:
+if module.params['disabled_days'] is not None:
     preimage['disabled_days'] = module.params['disabled_days']
 
 

@@ -39,10 +39,12 @@ and create playbook to manage triggers with predefined parameters inside your va
     - role: moira-alert.moira-trigger-role
       moira_api: http://localhost:8081/api
       moira_triggers: '{{ ServiceNameTriggers }}'
+      delegate_to: 127.0.0.1
+      run_once: True
       dry_run: False
 ```
 
-> **Note:** All actions will be made from your ansible control machine
+> **Note:** All tasks must be done from your ansible control machine
 
 ## <a name="configuration"></a> Configuration
 

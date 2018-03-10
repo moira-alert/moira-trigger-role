@@ -26,7 +26,5 @@
   check_mode: '{{ dry_run | default(True) }}'
   with_items:
     - '{{ moira_triggers }}'
-  delegate_to:
-    127.0.0.1
   tags:
     - moira

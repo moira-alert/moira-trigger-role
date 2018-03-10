@@ -4,4 +4,6 @@
     - role: moira-alert.moira-trigger-role
       moira_api: http://localhost:8081/api
       moira_triggers: '{{ ServiceNameTriggers }}'
+      delegate_to: 127.0.0.1
+      run_once: True
       dry_run: False

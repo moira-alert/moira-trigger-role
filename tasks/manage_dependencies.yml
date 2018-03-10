@@ -3,5 +3,3 @@
   pip:
     name: moira-client
     state: latest
-  delegate_to:
-    127.0.0.1

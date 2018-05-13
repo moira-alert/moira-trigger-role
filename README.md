@@ -54,11 +54,11 @@ Predefine following parameters inside your vars files. Working examples can be f
 
 | Parameter | Description | Type | Required | Default | Example |
 | ------ | ------ | ------ | ------ | ------ | ------ |
-| api_url | Url of Moira API | String | True | N/A | <http://localhost/api/> |
-| auth_custom | Custom authorization headers | Dictionary | False | None | Authorization: apiKey |
-| auth_user | Auth User (Basic Auth) | String | False | None | admin |
-| auth_pass | Auth Password (Basic Auth) | String | False | None | pass |
-| login | Auth Login (Basic Auth) | String | False | None | admin |
+| moira_api | Url of Moira API | String | True | N/A | <http://localhost/api/> |
+| moira_auth_custom | Custom authorization headers | Dictionary | False | None | Authorization: apiKey |
+| moira_auth_user | Auth User (Basic Auth) | String | False | None | admin |
+| moira_auth_pass | Auth Password (Basic Auth) | String | False | None | pass |
+| moira_auth_login | Auth Login (Basic Auth) | String | False | None | admin |
 
 > **Note:** Use moira_auth_custom if you're using additional authentication mechanisms instead of <br>
 > single basic auth, use moira_auth_user, moira_auth_pass and moira_auth_login otherwise. <br>
@@ -71,8 +71,8 @@ Predefine following parameters inside your vars files. Working examples can be f
 | state | Desired state of a trigger | String | True | present <br> absent | N/A | present |
 | id | Trigger id | String | True | N/A | N/A | trigger_1 |
 | name | Trigger name | String | True | N/A | N/A | Trigger 1 |
-| tags | List of trigger tags | List | True | N/A | Empty list | - Project <br> - Service |
-| targets | List of trigger targets <br> [See available graphite functions](https://github.com/go-graphite/carbonapi/blob/master/COMPATIBILITY.md#functions) | List | True | N/A | Empty list | - prefix.*.postfix |
+| tags | List of trigger tags | List | True | N/A | N/A | - Project <br> - Service |
+| targets | List of trigger targets <br> [See available graphite functions](https://github.com/go-graphite/carbonapi/blob/master/COMPATIBILITY.md#functions) | List | True | N/A | N/A | - prefix.*.postfix |
 | warn_value | Value to set WARN status | Float | False | N/A | None | 300 |
 | error_value | Value to set ERROR status | Float | False | N/A | None | 600 |
 | ttl | Time to Live (in seconds) | Int | False | N/A | 600 | 600 |
@@ -84,9 +84,6 @@ Predefine following parameters inside your vars files. Working examples can be f
 | start_minute | Start minute to send alerts | Int | False | N/A | 0 | 0 |
 | end_hour | End hour to send alerts | Int | False | N/A | 23 | 17 |
 | end_minute | End minute to send alerts | Int | False | N/A | 59 | 0 |
-
-> **Note:** By default, file contains examples of triggers with LoadAverage, MemoryFree and DiskSpace <br>
-> targets of most commonly used [Diamond](https://github.com/python-diamond/Diamond) collectors.
 
 ## <a name="role-tasks"></a> Role tasks
 

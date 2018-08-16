@@ -34,7 +34,6 @@ description:
     - Create new triggers.
     - Edit existing triggers parameters.
     - Delete triggers.
-version_added: '2.5'
 author: 'SKB Kontur'
 requirements:
     - 'python >= 2.7'
@@ -100,6 +99,11 @@ options:
       - C-like expression.
     required: False
     default: ''
+  is_remote:
+    description:
+      - Use remote storage.
+    required: False
+    default: False
   disabled_days:
     description:
       - Days for trigger to be in silent mode.
@@ -123,6 +127,12 @@ options:
       - Value to set ERROR status.
     required: False
     default: None
+  trigger_type:
+    description:
+      - Type of a trigger.
+    required: False
+    default: None
+    choices: ['rising', 'falling', 'expression']
   start_hour:
     description:
       - Start hour to send alerts.
@@ -248,6 +258,10 @@ fields = {
         'type': 'str',
         'required': False,
         'default': ''},
+    'is_remote': {
+        'type': 'bool',
+        'required': False,
+        'default': False},
     'disabled_days': {
         'type': 'list',
         'required': False,
@@ -266,6 +280,10 @@ fields = {
         'type': 'float',
         'required': False,
         'default': None},
+    'trigger_type': {
+        'type': 'str',
+        'choices': ['rising', 'falling', 'expression'],
+        'required': 'False'},
     'start_hour': {
         'type': 'int',
         'required': False,
@@ -306,6 +324,8 @@ preimage = {
     'ttl': module.params['ttl'],
     'ttl_state': module.params['ttl_state'],
     'expression': module.params['expression'],
+    'is_remote': module.params['is_remote'],
+    'trigger_type': module.params['trigger_type'],
     'desc': module.params['desc'],
     'tags': module.params['tags'],
     '_start_hour': module.params['start_hour'],

@@ -131,7 +131,6 @@ options:
     description:
       - Type of a trigger.
     required: False
-    default: None
     choices: ['rising', 'falling', 'expression']
   start_hour:
     description:

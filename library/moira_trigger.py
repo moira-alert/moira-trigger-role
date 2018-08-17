@@ -257,7 +257,7 @@ fields = {
     'trigger_type': {
         'type': 'str',
         'choices': ['rising', 'falling', 'expression'],
-        'required': 'False'},
+        'required': False},
     'expression': {
         'type': 'str',
         'required': False,

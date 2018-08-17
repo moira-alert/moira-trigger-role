@@ -78,44 +78,13 @@ options:
     description:
       - Trigger name.
     required: True
-  desc:
-    description:
-      - Trigger description.
-    required: False
-    default: ''
-  ttl:
-    description:
-      - Time To Live.
-    required: False
-    default: 600
-  ttl_state:
-    description:
-      - Trigger state at the expiration of TTL.
-    required: False
-    default: 'NODATA'
-    choices: ['NODATA', 'ERROR', 'WARN', 'OK']
-  expression:
-    description:
-      - C-like expression.
-    required: False
-    default: ''
-  is_remote:
-    description:
-      - Use remote storage.
-    required: False
-    default: False
-  disabled_days:
-    description:
-      - Days for trigger to be in silent mode.
-    required: False
-    default: None
-  targets:
-    description:
-      - List of trigger targets.
-    required: True
   tags:
     description:
       - List of trigger tags.
+    required: True
+  targets:
+    description:
+      - List of trigger targets.
     required: True
   warn_value:
     description:
@@ -132,6 +101,37 @@ options:
       - Type of a trigger.
     required: False
     choices: ['rising', 'falling', 'expression']
+  expression:
+    description:
+      - C-like expression.
+    required: False
+    default: ''
+  ttl:
+    description:
+      - Time To Live.
+    required: False
+    default: 600
+  ttl_state:
+    description:
+      - Trigger state at the expiration of TTL.
+    required: False
+    default: 'NODATA'
+    choices: ['NODATA', 'ERROR', 'WARN', 'OK']
+  is_remote:
+    description:
+      - Use remote storage.
+    required: False
+    default: False
+  desc:
+    description:
+      - Trigger description.
+    required: False
+    default: ''
+  disabled_days:
+    description:
+      - Days for trigger to be in silent mode.
+    required: False
+    default: None
   start_hour:
     description:
       - Start hour to send alerts.
@@ -240,35 +240,10 @@ fields = {
     'name': {
         'type': 'str',
         'required': True},
-    'desc': {
-        'type': 'str',
-        'required': False,
-        'default': ''},
-    'ttl': {
-        'type': 'int',
-        'required': False,
-        'default': 600},
-    'ttl_state': {
-        'type': 'str',
-        'required': False,
-        'choices': ['NODATA', 'ERROR', 'WARN', 'OK'],
-        'default': 'NODATA'},
-    'expression': {
-        'type': 'str',
-        'required': False,
-        'default': ''},
-    'is_remote': {
-        'type': 'bool',
-        'required': False,
-        'default': False},
-    'disabled_days': {
-        'type': 'list',
-        'required': False,
-        'default': None},
-    'targets': {
+    'tags': {
         'type': 'list',
         'required': True},
-    'tags': {
+    'targets': {
         'type': 'list',
         'required': True},
     'warn_value': {
@@ -283,6 +258,31 @@ fields = {
         'type': 'str',
         'choices': ['rising', 'falling', 'expression'],
         'required': 'False'},
+    'expression': {
+        'type': 'str',
+        'required': False,
+        'default': ''},
+    'ttl': {
+        'type': 'int',
+        'required': False,
+        'default': 600},
+    'ttl_state': {
+        'type': 'str',
+        'required': False,
+        'choices': ['NODATA', 'ERROR', 'WARN', 'OK'],
+        'default': 'NODATA'},
+    'is_remote': {
+        'type': 'bool',
+        'required': False,
+        'default': False},
+    'desc': {
+        'type': 'str',
+        'required': False,
+        'default': ''},
+    'disabled_days': {
+        'type': 'list',
+        'required': False,
+        'default': None},
     'start_hour': {
         'type': 'int',
         'required': False,

@@ -419,6 +419,7 @@ class MoiraTrigger(object):
             if not field == 'id' and \
                not image.__dict__[field] == self.preimage[field]:
                 image.__dict__[field] = self.preimage[field]
+            if not field == 'trigger_type':
                 score += 1
 
         if score != 0:

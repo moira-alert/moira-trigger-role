@@ -75,10 +75,12 @@ Predefine following parameters inside your vars files. Working examples can be f
 | targets | List of trigger targets <br> [See available graphite functions](https://github.com/go-graphite/carbonapi/blob/master/COMPATIBILITY.md#functions) | List | True | N/A | N/A | - prefix.*.postfix |
 | warn_value | Value to set WARN status | Float | False | N/A | None | 300 |
 | error_value | Value to set ERROR status | Float | False | N/A | None | 600 |
+| trigger_type | Type of a trigger | String | False | rising <br> falling <br> expression | N/A | rising |
+| expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
 | ttl | Time to Live (in seconds) | Int | False | N/A | 600 | 600 |
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
+| is_remote | Use remote storage | Bool | False | True <br> False | False | False |
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
-| expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
 | disabled_days | Days for trigger to be in silent mode | List | False | N/A | None | - Mon <br> - Wed |
 | start_hour | Start hour to send alerts | Int | False | N/A | 0 | 9 |
 | start_minute | Start minute to send alerts | Int | False | N/A | 0 | 0 |

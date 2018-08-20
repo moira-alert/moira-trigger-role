@@ -34,7 +34,6 @@ description:
     - Create new triggers.
     - Edit existing triggers parameters.
     - Delete triggers.
-version_added: '2.5'
 author: 'SKB Kontur'
 requirements:
     - 'python >= 2.7'
@@ -79,9 +78,32 @@ options:
     description:
       - Trigger name.
     required: True
-  desc:
+  tags:
     description:
-      - Trigger description.
+      - List of trigger tags.
+    required: True
+  targets:
+    description:
+      - List of trigger targets.
+    required: True
+  warn_value:
+    description:
+      - Value to set WARN status.
+    required: False
+    default: None
+  error_value:
+    description:
+      - Value to set ERROR status.
+    required: False
+    default: None
+  trigger_type:
+    description:
+      - Type of a trigger.
+    required: False
+    choices: ['rising', 'falling', 'expression']
+  expression:
+    description:
+      - C-like expression.
     required: False
     default: ''
   ttl:
@@ -95,32 +117,19 @@ options:
     required: False
     default: 'NODATA'
     choices: ['NODATA', 'ERROR', 'WARN', 'OK']
-  expression:
+  is_remote:
     description:
-      - C-like expression.
+      - Use remote storage.
+    required: False
+    default: False
+  desc:
+    description:
+      - Trigger description.
     required: False
     default: ''
   disabled_days:
     description:
       - Days for trigger to be in silent mode.
-    required: False
-    default: None
-  targets:
-    description:
-      - List of trigger targets.
-    required: True
-  tags:
-    description:
-      - List of trigger tags.
-    required: True
-  warn_value:
-    description:
-      - Value to set WARN status.
-    required: False
-    default: None
-  error_value:
-    description:
-      - Value to set ERROR status.
     required: False
     default: None
   start_hour:
@@ -231,7 +240,25 @@ fields = {
     'name': {
         'type': 'str',
         'required': True},
-    'desc': {
+    'tags': {
+        'type': 'list',
+        'required': True},
+    'targets': {
+        'type': 'list',
+        'required': True},
+    'warn_value': {
+        'type': 'float',
+        'required': False,
+        'default': None},
+    'error_value': {
+        'type': 'float',
+        'required': False,
+        'default': None},
+    'trigger_type': {
+        'type': 'str',
+        'choices': ['rising', 'falling', 'expression'],
+        'required': False},
+    'expression': {
         'type': 'str',
         'required': False,
         'default': ''},
@@ -244,26 +271,16 @@ fields = {
         'required': False,
         'choices': ['NODATA', 'ERROR', 'WARN', 'OK'],
         'default': 'NODATA'},
-    'expression': {
+    'is_remote': {
+        'type': 'bool',
+        'required': False,
+        'default': False},
+    'desc': {
         'type': 'str',
         'required': False,
         'default': ''},
     'disabled_days': {
         'type': 'list',
-        'required': False,
-        'default': None},
-    'targets': {
-        'type': 'list',
-        'required': True},
-    'tags': {
-        'type': 'list',
-        'required': True},
-    'warn_value': {
-        'type': 'float',
-        'required': False,
-        'default': None},
-    'error_value': {
-        'type': 'float',
         'required': False,
         'default': None},
     'start_hour': {
@@ -306,6 +323,8 @@ preimage = {
     'ttl': module.params['ttl'],
     'ttl_state': module.params['ttl_state'],
     'expression': module.params['expression'],
+    'is_remote': module.params['is_remote'],
+    'trigger_type': module.params['trigger_type'],
     'desc': module.params['desc'],
     'tags': module.params['tags'],
     '_start_hour': module.params['start_hour'],

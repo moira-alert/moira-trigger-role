@@ -420,7 +420,7 @@ class MoiraTrigger(object):
                not image.__dict__[field] == self.preimage[field]:
                 image.__dict__[field] = self.preimage[field]
                 if not field == 'trigger_type':
-                score += 1
+                    score += 1
 
         if score != 0:
             return True

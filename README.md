@@ -2,6 +2,8 @@
 
 # moira-trigger-role
 
+If you're new here, better check out our main [README](https://github.com/moira-alert/moira/blob/master/README.md).
+
 Ansible role to create, update and delete Moira triggers based on
 [python-moira-client](https://github.com/moira-alert/python-moira-client)
 

@@ -131,7 +131,12 @@ options:
     description:
       - Days for trigger to be in silent mode.
     required: False
-    default: None
+    default: []
+  timezone_offset:
+    description:
+      - Timezone offset (minutes)
+    required: False
+    default: 0
   start_hour:
     description:
       - Start hour to send alerts.
@@ -198,6 +203,7 @@ from functools import wraps
 
 try:
     from moira_client import Moira
+    from moira_client.models.trigger import DAYS_OF_WEEK
     HAS_MOIRA_CLIENT = True
 except ImportError:
     HAS_MOIRA_CLIENT = False
@@ -282,7 +288,11 @@ fields = {
     'disabled_days': {
         'type': 'list',
         'required': False,
-        'default': None},
+        'default': []},
+    'timezone_offset': {
+        'type': 'int',
+        'required': False,
+        'default': 0},
     'start_hour': {
         'type': 'int',
         'required': False,
@@ -327,14 +337,14 @@ preimage = {
     'trigger_type': module.params['trigger_type'],
     'desc': module.params['desc'],
     'tags': module.params['tags'],
-    '_start_hour': module.params['start_hour'],
-    '_start_minute': module.params['start_minute'],
-    '_end_hour': module.params['end_hour'],
-    '_end_minute': module.params['end_minute']}
-
-if module.params['disabled_days'] is not None:
-    preimage['disabled_days'] = set(module.params['disabled_days'])
-
+    'disabled_days': set(module.params['disabled_days']),
+    'sched': {
+        'days': [{
+            'name': day,
+            'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK],
+        'startOffset': (60 * module.params['start_hour']) + module.params['start_minute'],
+        'endOffset': (60 * module.params['end_hour']) + module.params['end_minute'],
+        'tzOffset': module.params['timezone_offset']}}
 
 def handle_exception(function):
 

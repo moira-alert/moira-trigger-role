@@ -131,7 +131,7 @@ options:
     description:
       - Days for trigger to be in silent mode.
     required: False
-    default: None
+    default: []
   timezone_offset:
     description:
       - Timezone offset (minutes)
@@ -288,7 +288,7 @@ fields = {
     'disabled_days': {
         'type': 'list',
         'required': False,
-        'default': None},
+        'default': []},
     'timezone_offset': {
         'type': 'int',
         'required': False,

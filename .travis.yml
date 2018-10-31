@@ -10,6 +10,7 @@ before_install:
   - sudo apt-get -y install software-properties-common
   - sudo apt-get -y install python-pip
   - sudo pip install ansible==$ANSIBLE_VERSION
+  - sudo pip install -U urllib3[secure]
   - ansible --version
 
 install:

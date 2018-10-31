@@ -132,6 +132,11 @@ options:
       - Days for trigger to be in silent mode.
     required: False
     default: None
+  timezone_offset:
+    description:
+      - Timezone offset (minutes)
+    required: False
+    default: 0
   start_hour:
     description:
       - Start hour to send alerts.
@@ -284,6 +289,10 @@ fields = {
         'type': 'list',
         'required': False,
         'default': None},
+    'timezone_offset': {
+        'type': 'int',
+        'required': False,
+        'default': 0},
     'start_hour': {
         'type': 'int',
         'required': False,
@@ -334,7 +343,7 @@ preimage = {
             'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK],
         'startOffset': (60 * module.params['start_hour']) + module.params['start_minute'],
         'endOffset': (60 * module.params['end_hour']) + module.params['end_minute'],
-        'tzOffset': - (60 * module.params['utc_increment'])}}
+        'tzOffset': module.params['timezone_offset']}}
 
 def handle_exception(function):
 

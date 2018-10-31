@@ -84,6 +84,7 @@ Predefine following parameters inside your vars files. Working examples can be f
 | is_remote | Use remote storage | Bool | False | True <br> False | False | False |
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
 | disabled_days | Days for trigger to be in silent mode | List | False | N/A | None | - Mon <br> - Wed |
+| timezone_offset | Timezone offset (minutes) | Int | False | N/A | 0 | -180 |
 | start_hour | Start hour to send alerts | Int | False | N/A | 0 | 9 |
 | start_minute | Start minute to send alerts | Int | False | N/A | 0 | 0 |
 | end_hour | End hour to send alerts | Int | False | N/A | 23 | 17 |

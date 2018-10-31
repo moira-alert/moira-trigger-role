@@ -199,7 +199,6 @@ from functools import wraps
 try:
     from moira_client import Moira
     from moira_client.models.trigger import DAYS_OF_WEEK
-    from moira_client.models.trigger import MINUTES_IN_HOUR
     HAS_MOIRA_CLIENT = True
 except ImportError:
     HAS_MOIRA_CLIENT = False
@@ -209,7 +208,6 @@ except ImportError:
         'pip install moira-client')
 
 from ansible.module_utils.basic import AnsibleModule
-
 
 fields = {
     'api_url': {
@@ -331,12 +329,12 @@ preimage = {
     'desc': module.params['desc'],
     'tags': module.params['tags'],
     'sched': {
-        'startOffset': (MINUTES_IN_HOUR * module.params['start_hour']) + module.params['start_minute'],
-        'endOffset': (MINUTES_IN_HOUR * module.params['end_hour']) + module.params['end_minute'],
-        'tzOffset': - (MINUTES_IN_HOUR * module.params['utc_increment']),
         'days': [{
             'name': day,
-            'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK]}}
+            'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK],
+        'startOffset': (60 * module.params['start_hour']) + module.params['start_minute'],
+        'endOffset': (60 * module.params['end_hour']) + module.params['end_minute'],
+        'tzOffset': - (60 * module.params['utc_increment'])}}
 
 def handle_exception(function):
 

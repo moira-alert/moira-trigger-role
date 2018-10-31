@@ -203,6 +203,7 @@ from functools import wraps
 
 try:
     from moira_client import Moira
+    from moira_client.models.trigger import DAYS_OF_WEEK
     HAS_MOIRA_CLIENT = True
 except ImportError:
     HAS_MOIRA_CLIENT = False
@@ -338,6 +339,9 @@ preimage = {
     'tags': module.params['tags'],
     'disabled_days': set(module.params['disabled_days']),
     'sched': {
+        'days': [{
+            'name': day,
+            'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK],
         'startOffset': (60 * module.params['start_hour']) + module.params['start_minute'],
         'endOffset': (60 * module.params['end_hour']) + module.params['end_minute'],
         'tzOffset': module.params['timezone_offset']}}

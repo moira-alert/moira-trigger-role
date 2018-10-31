@@ -210,8 +210,6 @@ except ImportError:
 
 from ansible.module_utils.basic import AnsibleModule
 
-MINUTES_IN_HOUR = 60
-DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 fields = {
     'api_url': {

@@ -198,6 +198,8 @@ from functools import wraps
 
 try:
     from moira_client import Moira
+    from moira_client.models.trigger import DAYS_OF_WEEK
+    from moira_client.models.trigger import MINUTES_IN_HOUR
     HAS_MOIRA_CLIENT = True
 except ImportError:
     HAS_MOIRA_CLIENT = False
@@ -207,6 +209,9 @@ except ImportError:
         'pip install moira-client')
 
 from ansible.module_utils.basic import AnsibleModule
+
+MINUTES_IN_HOUR = 60
+DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 fields = {
     'api_url': {
@@ -327,14 +332,13 @@ preimage = {
     'trigger_type': module.params['trigger_type'],
     'desc': module.params['desc'],
     'tags': module.params['tags'],
-    '_start_hour': module.params['start_hour'],
-    '_start_minute': module.params['start_minute'],
-    '_end_hour': module.params['end_hour'],
-    '_end_minute': module.params['end_minute']}
-
-if module.params['disabled_days'] is not None:
-    preimage['disabled_days'] = set(module.params['disabled_days'])
-
+    'sched': {
+        'startOffset': (MINUTES_IN_HOUR * module.params['start_hour']) + module.params['start_minute'],
+        'endOffset': (MINUTES_IN_HOUR * module.params['end_hour']) + module.params['end_minute'],
+        'tzOffset': - (MINUTES_IN_HOUR * module.params['utc_increment']),
+        'days': [{
+            'name': day,
+            'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK]}}
 
 def handle_exception(function):
 

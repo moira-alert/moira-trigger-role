@@ -20,6 +20,7 @@
     ttl_state: '{{ item.ttl_state | default(omit) }}' # Trigger state at the expiration of 'ttl' (string)
     is_remote: '{{ item.is_remote | default(omit) }}' # Use remote storage (bool)
     desc: '{{ item.desc | default(omit) }}' # Trigger description (string)
+    mute_new_metrics: '{{ item.mute_new_metrics | default(omit) }}' # Mute new metrics (bool)
     disabled_days: '{{ item.disabled_days | default(omit) }}' # Days for trigger to be in silent mode (list)
     timezone_offset: '{{ item.timezone_offset | default(omit) }}' # Timezone offset in minutes (int)
     start_hour: '{{ item.start_hour | default(omit) }}' # Start hour to send alerts (int)

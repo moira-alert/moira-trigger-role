@@ -127,6 +127,11 @@ options:
       - Trigger description.
     required: False
     default: ''
+  mute_new_metrics:
+    description:
+      - Mute new metrics.
+    required: False
+    default: False
   disabled_days:
     description:
       - Days for trigger to be in silent mode.
@@ -214,140 +219,8 @@ except ImportError:
 
 from ansible.module_utils.basic import AnsibleModule
 
-fields = {
-    'api_url': {
-        'type': 'str',
-        'required': True},
-    'auth_custom': {
-        'type': 'dict',
-        'required': False,
-        'default': None,
-        'no_log': True},
-    'auth_user': {
-        'type': 'str',
-        'required': False,
-        'default': None},
-    'auth_pass': {
-        'type': 'str',
-        'required': False,
-        'default': None,
-        'no_log': True},
-    'login': {
-        'type': 'str',
-        'required': False,
-        'default': None},
-    'state': {
-        'type': 'str',
-        'required': True,
-        'choices': ['present', 'absent']},
-    'id': {
-        'type': 'str',
-        'requred': True},
-    'name': {
-        'type': 'str',
-        'required': True},
-    'tags': {
-        'type': 'list',
-        'required': True},
-    'targets': {
-        'type': 'list',
-        'required': True},
-    'warn_value': {
-        'type': 'float',
-        'required': False,
-        'default': None},
-    'error_value': {
-        'type': 'float',
-        'required': False,
-        'default': None},
-    'trigger_type': {
-        'type': 'str',
-        'choices': ['rising', 'falling', 'expression'],
-        'required': False},
-    'expression': {
-        'type': 'str',
-        'required': False,
-        'default': ''},
-    'ttl': {
-        'type': 'int',
-        'required': False,
-        'default': 600},
-    'ttl_state': {
-        'type': 'str',
-        'required': False,
-        'choices': ['NODATA', 'ERROR', 'WARN', 'OK'],
-        'default': 'NODATA'},
-    'is_remote': {
-        'type': 'bool',
-        'required': False,
-        'default': False},
-    'desc': {
-        'type': 'str',
-        'required': False,
-        'default': ''},
-    'disabled_days': {
-        'type': 'list',
-        'required': False,
-        'default': []},
-    'timezone_offset': {
-        'type': 'int',
-        'required': False,
-        'default': 0},
-    'start_hour': {
-        'type': 'int',
-        'required': False,
-        'default': 0},
-    'start_minute': {
-        'type': 'int',
-        'required': False,
-        'default': 0},
-    'end_hour': {
-        'type': 'int',
-        'required': False,
-        'default': 23},
-    'end_minute': {
-        'type': 'int',
-        'required': False,
-        'default': 59}}
-
-module = AnsibleModule(
-    argument_spec=fields,
-    supports_check_mode=True)
-
-if not HAS_MOIRA_CLIENT:
-    module.fail_json(msg=MISSING_MOIRA_CLIENT)
-
-moira_api = Moira(
-    api_url=module.params['api_url'],
-    auth_custom=module.params['auth_custom'],
-    auth_user=module.params['auth_user'],
-    auth_pass=module.params['auth_pass'],
-    login=module.params['login'])
-
-preimage = {
-    'id': module.params['id'],
-    'name': module.params['name'],
-    'targets': module.params['targets'],
-    'warn_value': module.params['warn_value'],
-    'error_value': module.params['error_value'],
-    'ttl': module.params['ttl'],
-    'ttl_state': module.params['ttl_state'],
-    'expression': module.params['expression'],
-    'is_remote': module.params['is_remote'],
-    'trigger_type': module.params['trigger_type'],
-    'desc': module.params['desc'],
-    'tags': module.params['tags'],
-    'disabled_days': set(module.params['disabled_days']),
-    'sched': {
-        'days': [{
-            'name': day,
-            'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK],
-        'startOffset': (60 * module.params['start_hour']) + module.params['start_minute'],
-        'endOffset': (60 * module.params['end_hour']) + module.params['end_minute'],
-        'tzOffset': module.params['timezone_offset']}}
 
 def handle_exception(function):
-
     '''Handling occurred exceptions.
 
     Returns:
@@ -371,20 +244,19 @@ def handle_exception(function):
 
 
 class MoiraTrigger(object):
-
     '''Moira trigger.
 
     Args:
         trigger preimage (dict): trigger preimage.
 
     Attributes:
+        client (moira_client.Client): moira client.
         preimage (dict): trigger preimage.
-        image (dict): trigger image if exists.
 
     '''
 
-    def __init__(self, trigger_preimage):
-
+    def __init__(self, client, trigger_preimage):
+        self.client = client
         self._id = trigger_preimage['id']
         self.preimage = trigger_preimage
 
@@ -397,7 +269,7 @@ class MoiraTrigger(object):
 
         '''
 
-        self.image = moira_api.trigger.fetch_by_id(
+        self.image = self.client.trigger.fetch_by_id(
             self._id)
 
         if self.image is not None:
@@ -423,11 +295,11 @@ class MoiraTrigger(object):
         image.__dict__['tags'].sort()
 
         for field in 'name', 'desc':
-            self.preimage[field] = preimage[field].decode("utf-8")
+            self.preimage[field] = self.preimage[field].decode("utf-8")
 
         for field in self.preimage:
             if not field == 'id' and \
-               not image.__dict__[field] == self.preimage[field]:
+                    not image.__dict__[field] == self.preimage[field]:
                 image.__dict__[field] = self.preimage[field]
                 if not field == 'trigger_type':
                     score += 1
@@ -439,16 +311,16 @@ class MoiraTrigger(object):
 
 
 class MoiraTriggerManager(object):
-
     '''Create, edit and delete Moira triggers.
 
     Args:
+        client (moira_client.Client): moira client.
         dry_run (bool): enables check mode.
 
     '''
 
-    def __init__(self, dry_run):
-
+    def __init__(self, client, dry_run):
+        self.client = client
         self.dry_run = dry_run
         self.has_diff = False
 
@@ -470,7 +342,7 @@ class MoiraTriggerManager(object):
             return {moira_trigger._id: 'no id found for trigger'}
 
         if not self.dry_run and \
-           moira_api.trigger.delete(moira_trigger._id):
+                self.client.trigger.delete(moira_trigger._id):
             self.has_diff = True
 
         return {moira_trigger._id: 'trigger has been removed'}
@@ -491,7 +363,7 @@ class MoiraTriggerManager(object):
 
         if not moira_trigger.has_image():
 
-            trigger = moira_api.trigger.create(
+            trigger = self.client.trigger.create(
                 **moira_trigger.preimage)
 
             result = 'trigger has been created'
@@ -506,7 +378,7 @@ class MoiraTriggerManager(object):
             result = 'trigger has been updated'
 
         if not self.dry_run and \
-           moira_trigger.merge_with(trigger):
+                moira_trigger.merge_with(trigger):
             self.has_diff = True
             trigger.update()
 
@@ -535,13 +407,150 @@ class MoiraTriggerManager(object):
 
 
 def main():
-
     '''Interact with Moira API via Ansible.
 
     '''
 
-    manager = MoiraTriggerManager(dry_run=module.check_mode)
-    trigger = MoiraTrigger(trigger_preimage=preimage)
+    fields = {
+        'api_url': {
+            'type': 'str',
+            'required': True},
+        'auth_custom': {
+            'type': 'dict',
+            'required': False,
+            'default': None,
+            'no_log': True},
+        'auth_user': {
+            'type': 'str',
+            'required': False,
+            'default': None},
+        'auth_pass': {
+            'type': 'str',
+            'required': False,
+            'default': None,
+            'no_log': True},
+        'login': {
+            'type': 'str',
+            'required': False,
+            'default': None},
+        'state': {
+            'type': 'str',
+            'required': True,
+            'choices': ['present', 'absent']},
+        'id': {
+            'type': 'str',
+            'requred': True},
+        'name': {
+            'type': 'str',
+            'required': True},
+        'tags': {
+            'type': 'list',
+            'required': True},
+        'targets': {
+            'type': 'list',
+            'required': True},
+        'warn_value': {
+            'type': 'float',
+            'required': False,
+            'default': None},
+        'error_value': {
+            'type': 'float',
+            'required': False,
+            'default': None},
+        'trigger_type': {
+            'type': 'str',
+            'choices': ['rising', 'falling', 'expression'],
+            'required': False},
+        'expression': {
+            'type': 'str',
+            'required': False,
+            'default': ''},
+        'ttl': {
+            'type': 'int',
+            'required': False,
+            'default': 600},
+        'ttl_state': {
+            'type': 'str',
+            'required': False,
+            'choices': ['NODATA', 'ERROR', 'WARN', 'OK'],
+            'default': 'NODATA'},
+        'is_remote': {
+            'type': 'bool',
+            'required': False,
+            'default': False},
+        'desc': {
+            'type': 'str',
+            'required': False,
+            'default': ''},
+        'mute_new_metrics': {
+            'type': 'bool',
+            'required': False,
+            'default': False,
+        },
+        'disabled_days': {
+            'type': 'list',
+            'required': False,
+            'default': []},
+        'timezone_offset': {
+            'type': 'int',
+            'required': False,
+            'default': 0},
+        'start_hour': {
+            'type': 'int',
+            'required': False,
+            'default': 0},
+        'start_minute': {
+            'type': 'int',
+            'required': False,
+            'default': 0},
+        'end_hour': {
+            'type': 'int',
+            'required': False,
+            'default': 23},
+        'end_minute': {
+            'type': 'int',
+            'required': False,
+            'default': 59}}
+
+    module = AnsibleModule(
+        argument_spec=fields,
+        supports_check_mode=True)
+
+    preimage = {
+        'id': module.params['id'],
+        'name': module.params['name'],
+        'targets': module.params['targets'],
+        'warn_value': module.params['warn_value'],
+        'error_value': module.params['error_value'],
+        'ttl': module.params['ttl'],
+        'ttl_state': module.params['ttl_state'],
+        'expression': module.params['expression'],
+        'is_remote': module.params['is_remote'],
+        'trigger_type': module.params['trigger_type'],
+        'desc': module.params['desc'],
+        'tags': module.params['tags'],
+        'mute_new_metrics': module.params['mute_new_metrics'],
+        'disabled_days': set(module.params['disabled_days']),
+        'sched': {
+            'days': [{
+                'name': day,
+                'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK],
+            'startOffset': (60 * module.params['start_hour']) + module.params['start_minute'],
+            'endOffset': (60 * module.params['end_hour']) + module.params['end_minute'],
+            'tzOffset': module.params['timezone_offset']}}
+
+    if not HAS_MOIRA_CLIENT:
+        module.fail_json(msg=MISSING_MOIRA_CLIENT)
+
+    api_client = Moira(
+        api_url=module.params['api_url'],
+        auth_custom=module.params['auth_custom'],
+        auth_user=module.params['auth_user'],
+        auth_pass=module.params['auth_pass'],
+        login=module.params['login'])
+
+    manager = MoiraTriggerManager(client=api_client, dry_run=module.check_mode)
+    trigger = MoiraTrigger(client=api_client, trigger_preimage=preimage)
 
     result = manager.define_state(
         state=module.params['state'], moira_trigger=trigger)

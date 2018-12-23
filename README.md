@@ -83,6 +83,7 @@ Predefine following parameters inside your vars files. Working examples can be f
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
 | is_remote | Use remote storage | Bool | False | True <br> False | False | False |
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
+| mute_new_metrics | Mute new metrics | Bool | False | True <br> False | False | False |
 | disabled_days | Days for trigger to be in silent mode | List | False | N/A | Empty list | - Mon <br> - Wed |
 | timezone_offset | Timezone offset (minutes) | Int | False | N/A | 0 | -180 |
 | start_hour | Start hour to send alerts | Int | False | N/A | 0 | 9 |

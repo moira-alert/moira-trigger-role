@@ -210,6 +210,7 @@ try:
     from moira_client import Moira
     from moira_client.models.trigger import DAYS_OF_WEEK
     from moira_client.models.trigger import MINUTES_IN_HOUR
+
     HAS_MOIRA_CLIENT = True
 except ImportError:
     HAS_MOIRA_CLIENT = False
@@ -531,6 +532,10 @@ def main():
         'tags': module.params['tags'],
         'mute_new_metrics': module.params['mute_new_metrics'],
         'disabled_days': set(module.params['disabled_days']),
+        '_start_hour': module.params['start_hour'],
+        '_start_minute': module.params['start_minute'],
+        '_end_hour': module.params['end_hour'],
+        '_end_minute': module.params['end_minute'],
         'sched': {
             'days': [],
             'startOffset': module.params['start_hour'] * MINUTES_IN_HOUR + module.params['start_minute'],

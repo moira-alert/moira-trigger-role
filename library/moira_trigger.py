@@ -209,6 +209,7 @@ from functools import wraps
 try:
     from moira_client import Moira
     from moira_client.models.trigger import DAYS_OF_WEEK
+    from moira_client.models.trigger import MINUTES_IN_HOUR
     HAS_MOIRA_CLIENT = True
 except ImportError:
     HAS_MOIRA_CLIENT = False
@@ -298,8 +299,7 @@ class MoiraTrigger(object):
             self.preimage[field] = self.preimage[field].decode("utf-8")
 
         for field in self.preimage:
-            if not field == 'id' and \
-                    not image.__dict__[field] == self.preimage[field]:
+            if not field == 'id' and not image.__dict__[field] == self.preimage[field]:
                 image.__dict__[field] = self.preimage[field]
                 if not field == 'trigger_type':
                     score += 1
@@ -532,12 +532,17 @@ def main():
         'mute_new_metrics': module.params['mute_new_metrics'],
         'disabled_days': set(module.params['disabled_days']),
         'sched': {
-            'days': [{
-                'name': day,
-                'enabled': day not in module.params['disabled_days']} for day in DAYS_OF_WEEK],
-            'startOffset': (60 * module.params['start_hour']) + module.params['start_minute'],
-            'endOffset': (60 * module.params['end_hour']) + module.params['end_minute'],
+            'days': [],
+            'startOffset': module.params['start_hour'] * MINUTES_IN_HOUR + module.params['start_minute'],
+            'endOffset': module.params['end_hour'] * MINUTES_IN_HOUR + module.params['end_minute'],
             'tzOffset': module.params['timezone_offset']}}
+
+    for day in DAYS_OF_WEEK:
+        day_info = {
+            'enabled': True if day not in module.params['disabled_days'] else False,
+            'name': day
+        }
+        preimage['sched']['days'].append(day_info)
 
     if not HAS_MOIRA_CLIENT:
         module.fail_json(msg=MISSING_MOIRA_CLIENT)

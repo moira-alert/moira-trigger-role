@@ -116,7 +116,7 @@ options:
       - Trigger state at the expiration of TTL.
     required: False
     default: 'NODATA'
-    choices: ['NODATA', 'ERROR', 'WARN', 'OK']
+    choices: ['NODATA', 'DEL', 'ERROR', 'WARN', 'OK']
   is_remote:
     description:
       - Use remote storage.
@@ -473,7 +473,7 @@ def main():
         'ttl_state': {
             'type': 'str',
             'required': False,
-            'choices': ['NODATA', 'ERROR', 'WARN', 'OK'],
+            'choices': ['NODATA', 'DEL', 'ERROR', 'WARN', 'OK'],
             'default': 'NODATA'},
         'is_remote': {
             'type': 'bool',

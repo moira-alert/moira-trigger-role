@@ -80,7 +80,7 @@ Predefine following parameters inside your vars files. Working examples can be f
 | trigger_type | Type of a trigger | String | False | rising <br> falling <br> expression | N/A | rising |
 | expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
 | ttl | Time to Live (in seconds) | Int | False | N/A | 600 | 600 |
-| ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> ERROR <br> WARN <br> OK | NODATA | WARN |
+| ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> DEL <br> ERROR <br> WARN <br> OK | NODATA | WARN |
 | is_remote | Use remote storage | Bool | False | True <br> False | False | False |
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
 | mute_new_metrics | Mute new metrics | Bool | False | True <br> False | False | False |

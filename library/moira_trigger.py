@@ -297,7 +297,8 @@ class MoiraTrigger(object):
         image.__dict__['tags'].sort()
 
         for field in 'name', 'desc':
-            self.preimage[field] = self.preimage[field].decode("utf-8")
+            if not type(self.preimage[field]) == type(image.__dict__[field]):
+                self.preimage[field] = self.preimage[field].decode("utf-8")
 
         for field in self.preimage:
             if not field == 'id' and not image.__dict__[field] == self.preimage[field]:

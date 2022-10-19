@@ -2,8 +2,6 @@ dist: focal
 
 matrix:
   include:
-    - env: ANSIBLE_VERSION=2.3.2
-    - env: ANSIBLE_VERSION=2.4.2
     - env: ANSIBLE_VERSION=6.0.0
 
 before_install:
@@ -17,15 +15,16 @@ before_install:
 install:
   - sudo mkdir /etc/fake_api/
   - sudo cp ./tests/files/fake_api.py /etc/fake_api/fake_api.py
-  - sudo cp ./tests/files/fake_api.conf /etc/init/fake_api.conf
+  - sudo cp ./tests/files/fake_api.service /etc/systemd/system/
 
 before_script:
-  - sudo service fake_api start
+ - sudo systemctl start fake_api
 
 script:
   - cd ./tests/
+  - python3 ./tests/files/fake_api.py 
   - make
 
 after_script:
-  - sudo service fake_api stop
-  - sudo cat /var/log/upstart/fake_api.log
+  - sudo systemctl stop fake_api
+  #- sudo cat /var/log/upstart/fake_api.log

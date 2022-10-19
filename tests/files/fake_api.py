@@ -6,7 +6,7 @@
 
 import json
 
-from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, HTTPServer
 
 PORT = 8081
 

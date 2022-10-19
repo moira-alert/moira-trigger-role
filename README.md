@@ -90,6 +90,7 @@ Predefine following parameters inside your vars files. Working examples can be f
 | start_minute | Start minute to send alerts | Int | False | N/A | 0 | 0 |
 | end_hour | End hour to send alerts | Int | False | N/A | 23 | 17 |
 | end_minute | End minute to send alerts | Int | False | N/A | 59 | 0 |
+| alone_metrics | Set some target as single metric | Object, example:  | False | N/A | {'t1': False, 't2': True, ... 'tN': True} | {'t1': False, 't2': False} |
 
 ## <a name="role-tasks"></a> Role tasks
 

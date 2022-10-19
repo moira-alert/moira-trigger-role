@@ -7,9 +7,9 @@ matrix:
 
 before_install:
   - sudo apt-get -y install software-properties-common
-  - sudo apt-get -y install python-pip
-  - sudo pip install --index-url https://pypi.python.org/simple/ --verbose ansible==$ANSIBLE_VERSION
-  - sudo pip install -U urllib3[secure]
+  - sudo apt-get -y install python3-pip
+  - sudo pip3 install --index-url https://pypi.python.org/simple/ --verbose ansible==$ANSIBLE_VERSION
+  - sudo pip3 install -U urllib3[secure]
   - ansible --version
 
 install:

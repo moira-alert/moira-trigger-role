@@ -8,8 +8,8 @@ matrix:
 before_install:
   - sudo apt-get -y install software-properties-common
   - sudo apt-get -y install python-pip
-  - sudo pip install --verbose ansible==$ANSIBLE_VERSION
-  - sudo pip install -U urllib3[secure]
+  - sudo pip3 install --verbose ansible==$ANSIBLE_VERSION
+  - sudo pip3 install -U urllib3[secure]
   - ansible --version
 
 install:

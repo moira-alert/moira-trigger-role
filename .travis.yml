@@ -1,4 +1,3 @@
-sudo: required
 dist: trusty
 
 matrix:
@@ -9,7 +8,7 @@ matrix:
 before_install:
   - sudo apt-get -y install software-properties-common
   - sudo apt-get -y install python-pip
-  - pip install ansible==$ANSIBLE_VERSION
+  - sudo pip install --user ansible==$ANSIBLE_VERSION
   - sudo pip install -U urllib3[secure]
   - ansible --version
 

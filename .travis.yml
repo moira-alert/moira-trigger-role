@@ -22,7 +22,6 @@ before_script:
 
 script:
   - cd ./tests/
-  - python3 ./tests/files/fake_api.py 
   - make
 
 after_script:

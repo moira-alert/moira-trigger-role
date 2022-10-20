@@ -6,7 +6,7 @@ install: # install moira-trigger-role
 	ansible-galaxy install moira-alert.moira-trigger-role --roles-path=roles --force
 
 triggers_staging: # manage triggers for staging
-	ansible-playbook -i staging --connection=local --sudo -vv site.yml
+	ansible-playbook -i staging --connection=local -vv site.yml -e 'ansible_python_interpreter=/usr/bin/python3'
 
 triggers_production: # manage triggers for production
-	ansible-playbook -i production --connection=local --sudo -vv site.yml
+	ansible-playbook -i production --connection=local -vv site.yml -e 'ansible_python_interpreter=/usr/bin/python3'

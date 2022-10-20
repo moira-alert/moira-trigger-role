@@ -1,30 +1,29 @@
-sudo: required
-dist: trusty
+dist: focal
 
 matrix:
   include:
-    - env: ANSIBLE_VERSION=2.3.2
-    - env: ANSIBLE_VERSION=2.4.2
+    - env: ANSIBLE_VERSION=6.0.0
 
 before_install:
   - sudo apt-get -y install software-properties-common
-  - sudo apt-get -y install python-pip
-  - sudo pip install ansible==$ANSIBLE_VERSION
-  - sudo pip install -U urllib3[secure]
+  - sudo apt-get -y install python3-pip
+  - sudo pip3 install --upgrade pip
+  - sudo pip3 install ansible==$ANSIBLE_VERSION
+  - sudo pip3 install -U urllib3[secure]
   - ansible --version
 
 install:
   - sudo mkdir /etc/fake_api/
   - sudo cp ./tests/files/fake_api.py /etc/fake_api/fake_api.py
-  - sudo cp ./tests/files/fake_api.conf /etc/init/fake_api.conf
+  - sudo cp ./tests/files/fake_api.service /etc/systemd/system/
 
 before_script:
-  - sudo service fake_api start
+ - sudo systemctl start fake_api
 
 script:
   - cd ./tests/
   - make
 
 after_script:
-  - sudo service fake_api stop
-  - sudo cat /var/log/upstart/fake_api.log
+  - sudo systemctl stop fake_api
+  #- sudo cat /var/log/upstart/fake_api.log

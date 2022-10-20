@@ -11,6 +11,4 @@ script:
   - cd ./tests/
   - python3 ./files/fake_api.py & 2>&1 > ../tests/fake_api.log
   - make
-
-after_script:
   - cat ./tests/fake_api.log

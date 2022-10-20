@@ -1,3 +1,0 @@
-[Service]
-Type=simple
-ExecStart=/bin/python3 /etc/fake_api/fake_api.py

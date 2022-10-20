@@ -27,6 +27,7 @@
     start_minute: '{{ item.start_minute | default(omit) }}' # Start minute to send alerts (int)
     end_hour: '{{ item.end_hour | default(omit) }}' # End hour to send alerts (int)
     end_minute: '{{ item.end_minute | default(omit) }}' # End minute to send alerts (int)
+    alone_metrics: '{{ item.alone_metrics | default(omit) }}' # Targets with alone metrics (list)
   check_mode: '{{ dry_run | default(True) }}'
   with_items:
     - '{{ moira_triggers }}'

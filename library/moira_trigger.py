@@ -162,6 +162,11 @@ options:
       - End minute to send alerts.
     required: False
     default: 59
+  alone_metrics:
+    description:
+      - Targets with alone metrics.
+    required: False
+    default: []
 notes:
     - More details at https://github.com/moira-alert/moira-trigger-role.
 '''
@@ -441,7 +446,7 @@ def main():
             'choices': ['present', 'absent']},
         'id': {
             'type': 'str',
-            'requred': True},
+            'required': True},
         'name': {
             'type': 'str',
             'required': True},
@@ -512,11 +517,20 @@ def main():
         'end_minute': {
             'type': 'int',
             'required': False,
-            'default': 59}}
+            'default': 59},
+        'alone_metrics': {
+            'type': 'list',
+            'required': False,
+            'default': []},
+    }
 
     module = AnsibleModule(
         argument_spec=fields,
         supports_check_mode=True)
+
+    alone_metrics = []
+    for m in module.params['alone_metrics']:
+        alone_metrics[m] = True
 
     preimage = {
         'id': module.params['id'],
@@ -537,6 +551,7 @@ def main():
         '_start_minute': module.params['start_minute'],
         '_end_hour': module.params['end_hour'],
         '_end_minute': module.params['end_minute'],
+        'alone_metrics': alone_metrics,
         'sched': {
             'days': [],
             'startOffset': module.params['start_hour'] * MINUTES_IN_HOUR + module.params['start_minute'],

@@ -1,29 +1,13 @@
 dist: focal
 
-matrix:
-  include:
-    - env: ANSIBLE_VERSION=6.0.0
-
-before_install:
-  - sudo apt-get -y install software-properties-common
-  - sudo apt-get -y install python3-pip
-  - sudo pip3 install --upgrade pip
-  - sudo pip3 install ansible==$ANSIBLE_VERSION
-  - sudo pip3 install -U urllib3[secure]
-  - ansible --version
+language: python
+python: "3.9"
 
 install:
-  - sudo mkdir /etc/fake_api/
-  - sudo cp ./tests/files/fake_api.py /etc/fake_api/fake_api.py
-  - sudo cp ./tests/files/fake_api.service /etc/systemd/system/
-
-before_script:
- - sudo systemctl start fake_api
+  - pip3 install -r requirements.txt
+  - ansible --version
 
 script:
   - cd ./tests/
+  - python3 ./files/fake_api.py &
   - make
-
-after_script:
-  - sudo systemctl stop fake_api
-  #- sudo cat /var/log/upstart/fake_api.log

@@ -7,7 +7,7 @@ python: "3.9"
 #  include:
 #    - env: ANSIBLE_VERSION=6.0.0
 
-before_install:
+install:
   - pip3 install -r requirements.txt
   - ansible --version
 
@@ -20,7 +20,7 @@ before_install:
  #- sudo systemctl start fake_api
 
 script:
-  - python3./tests/files/fake_api.py &
+  - python3 ./tests/files/fake_api.py &
   - cd ./tests/
   - make
 

@@ -11,4 +11,3 @@ script:
   - cd ./tests/
   - python3 ./files/fake_api.py &
   - make
-

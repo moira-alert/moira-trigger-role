@@ -9,23 +9,21 @@ python: "3.9"
 
 before_install:
   - pip3 install -r requirements.txt
-  #- pip3 install --upgrade pip
-  #- pip3 install ansible==$ANSIBLE_VERSION
-  #- sudo pip3 install -U urllib3[secure]
   - ansible --version
 
-install:
-  - sudo mkdir /etc/fake_api/
-  - sudo cp ./tests/files/fake_api.py /etc/fake_api/fake_api.py
-  - sudo cp ./tests/files/fake_api.service /etc/systemd/system/
+#install:
+ # - sudo mkdir /etc/fake_api/
+ # - sudo cp ./tests/files/fake_api.py /etc/fake_api/fake_api.py
+ # - sudo cp ./tests/files/fake_api.service /etc/systemd/system/
 
-before_script:
- - sudo systemctl start fake_api
+#before_script:
+ #- sudo systemctl start fake_api
 
 script:
+  - python3./tests/files/fake_api.py &
   - cd ./tests/
   - make
 
-after_script:
-  - sudo systemctl stop fake_api
+#after_script:
+ # - sudo systemctl stop fake_api
   #- sudo cat /var/log/upstart/fake_api.log

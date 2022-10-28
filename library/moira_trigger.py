@@ -519,18 +519,19 @@ def main():
             'required': False,
             'default': 59},
         'alone_metrics': {
-            'type': 'list',
+            'type': 'dict',
             'required': False,
-            'default': []},
+            'default': None},
     }
 
     module = AnsibleModule(
         argument_spec=fields,
         supports_check_mode=True)
 
-    alone_metrics = []
-    for m in module.params['alone_metrics']:
-        alone_metrics[m] = True
+    if len(module.params['alone_metrics']) > 0:
+        alone_metrics = {}
+        for m in module.params['alone_metrics']:
+            alone_metrics[m] = True
 
     preimage = {
         'id': module.params['id'],

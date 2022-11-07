@@ -166,7 +166,7 @@ options:
     description:
       - Targets with alone metrics.
     required: False
-    default: []
+    default: None
 notes:
     - More details at https://github.com/moira-alert/moira-trigger-role.
 '''

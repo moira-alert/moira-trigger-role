@@ -528,7 +528,7 @@ def main():
         argument_spec=fields,
         supports_check_mode=True)
 
-    if len(module.params['alone_metrics']) > 0:
+    if module.params['alone_metrics'] is not None:
         alone_metrics = {}
         for m in module.params['alone_metrics']:
             alone_metrics[m] = True

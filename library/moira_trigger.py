@@ -528,11 +528,6 @@ def main():
         argument_spec=fields,
         supports_check_mode=True)
 
-    if module.params['alone_metrics'] is not None:
-        alone_metrics = {}
-        for m in module.params['alone_metrics']:
-            alone_metrics[m] = True
-
     preimage = {
         'id': module.params['id'],
         'name': module.params['name'],
@@ -552,12 +547,17 @@ def main():
         '_start_minute': module.params['start_minute'],
         '_end_hour': module.params['end_hour'],
         '_end_minute': module.params['end_minute'],
-        'alone_metrics': alone_metrics,
         'sched': {
             'days': [],
             'startOffset': module.params['start_hour'] * MINUTES_IN_HOUR + module.params['start_minute'],
             'endOffset': module.params['end_hour'] * MINUTES_IN_HOUR + module.params['end_minute'],
             'tzOffset': module.params['timezone_offset']}}
+
+    if module.params['alone_metrics'] is not None:
+        alone_metrics = {}
+        for m in module.params['alone_metrics']:
+            alone_metrics[m] = True
+        preimage['alone_metrics'] = alone_metrics
 
     for day in DAYS_OF_WEEK:
         day_info = {

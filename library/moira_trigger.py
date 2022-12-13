@@ -37,7 +37,7 @@ description:
 author: 'SKB Kontur'
 requirements:
     - 'python >= 2.7'
-    - 'moira-client >= 2.0'
+    - 'moira-python-client >= 2.0'
 options:
   api_url:
     description:
@@ -213,16 +213,16 @@ from functools import wraps
 
 try:
     from moira_client import Moira
-    from moira_client.models.trigger import DAYS_OF_WEEK
-    from moira_client.models.trigger import MINUTES_IN_HOUR
+    from moira_client.models.common import DAYS_OF_WEEK
+    from moira_client.models.common import MINUTES_IN_HOUR
 
     HAS_MOIRA_CLIENT = True
 except ImportError:
     HAS_MOIRA_CLIENT = False
     MISSING_MOIRA_CLIENT = (
         'Unable to import required module. '
-        'Make sure you have moira-client installed: '
-        'pip install moira-client')
+        'Make sure you have moira-python-client installed: '
+        'pip install moira-python-client')
 
 from ansible.module_utils.basic import AnsibleModule
 
@@ -551,13 +551,11 @@ def main():
             'days': [],
             'startOffset': module.params['start_hour'] * MINUTES_IN_HOUR + module.params['start_minute'],
             'endOffset': module.params['end_hour'] * MINUTES_IN_HOUR + module.params['end_minute'],
-            'tzOffset': module.params['timezone_offset']}}
+            'tzOffset': module.params['timezone_offset']},
+    }
 
     if module.params['alone_metrics'] is not None:
-        alone_metrics = {}
-        for m in module.params['alone_metrics']:
-            alone_metrics[m] = True
-        preimage['alone_metrics'] = alone_metrics
+        preimage['alone_metrics'] = module.params['alone_metrics']
 
     for day in DAYS_OF_WEEK:
         day_info = {

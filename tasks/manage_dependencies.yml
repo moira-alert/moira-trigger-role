@@ -1,5 +1,5 @@
-# Always use the latest version of python-moira-client
-- name: be sure moira-client is installed
+# Always use the latest version of moira-python-client
+- name: be sure moira-python-client is installed
   pip:
-    name: moira-client
+    name: moira-python-client
     state: latest

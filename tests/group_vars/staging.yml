@@ -14,6 +14,7 @@ ServiceNameTriggers:
       - Sun
     start_hour: 9
     end_hour: 17
+    alone_metrics: {'t1': True, 't2': False}
 
   - id: ProjectServiceNameMemoryfree
     name: Project.ServiceName.MemoryFree

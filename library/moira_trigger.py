@@ -22,6 +22,9 @@
 
 '''
 
+from ansible.module_utils.basic import AnsibleModule
+from functools import wraps
+
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
                     'supported_by': 'community'}
@@ -209,12 +212,9 @@ result:
   sample: {'test2': 'trigger has been created'}
 '''
 
-from functools import wraps
 
 try:
     from moira_client import Moira
-    from moira_client.models.common import DAYS_OF_WEEK
-    from moira_client.models.common import MINUTES_IN_HOUR
 
     HAS_MOIRA_CLIENT = True
 except ImportError:
@@ -224,7 +224,24 @@ except ImportError:
         'Make sure you have moira-python-client installed: '
         'pip install moira-python-client')
 
-from ansible.module_utils.basic import AnsibleModule
+DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+MINUTES_IN_HOUR = 60
+
+
+def get_schedule(start_hour, start_minute, end_hour, end_minute, disabled_days, timezone_offset):
+    days = []
+    for day in DAYS_OF_WEEK:
+        day_info = {
+            'enabled': True if day not in disabled_days else False,
+            'name': day
+        }
+        days.append(day_info)
+    return {
+        'days': days,
+        'startOffset': start_hour * MINUTES_IN_HOUR + start_minute,
+        'endOffset': end_hour * MINUTES_IN_HOUR + end_minute,
+        'tzOffset': timezone_offset,
+    }
 
 
 def handle_exception(function):
@@ -268,7 +285,6 @@ class MoiraTrigger(object):
         self.preimage = trigger_preimage
 
     def has_image(self):
-
         '''Check if image exists.
 
         Returns:
@@ -285,7 +301,6 @@ class MoiraTrigger(object):
         return False
 
     def merge_with(self, image):
-
         '''Merge preimage with given image.
 
         Args:
@@ -333,7 +348,6 @@ class MoiraTriggerManager(object):
 
     @handle_exception
     def remove(self, moira_trigger):
-
         '''Remove trigger if exists.
 
         Args:
@@ -356,7 +370,6 @@ class MoiraTriggerManager(object):
 
     @handle_exception
     def edit(self, moira_trigger):
-
         '''Edit existing trigger.
 
         Args:
@@ -393,7 +406,6 @@ class MoiraTriggerManager(object):
 
     @handle_exception
     def define_state(self, state, moira_trigger):
-
         '''Define trigger state.
 
         Args:
@@ -542,27 +554,18 @@ def main():
         'desc': module.params['desc'],
         'tags': module.params['tags'],
         'mute_new_metrics': module.params['mute_new_metrics'],
-        'disabled_days': set(module.params['disabled_days']),
-        '_start_hour': module.params['start_hour'],
-        '_start_minute': module.params['start_minute'],
-        '_end_hour': module.params['end_hour'],
-        '_end_minute': module.params['end_minute'],
-        'sched': {
-            'days': [],
-            'startOffset': module.params['start_hour'] * MINUTES_IN_HOUR + module.params['start_minute'],
-            'endOffset': module.params['end_hour'] * MINUTES_IN_HOUR + module.params['end_minute'],
-            'tzOffset': module.params['timezone_offset']},
+        'sched': get_schedule(
+            module.params['start_hour'],
+            module.params['start_minute'],
+            module.params['end_hour'],
+            module.params['end_minute'],
+            set(module.params['disabled_days']),
+            module.params['timezone_offset']
+        ),
     }
 
     if module.params['alone_metrics'] is not None:
         preimage['alone_metrics'] = module.params['alone_metrics']
-
-    for day in DAYS_OF_WEEK:
-        day_info = {
-            'enabled': True if day not in module.params['disabled_days'] else False,
-            'name': day
-        }
-        preimage['sched']['days'].append(day_info)
 
     if not HAS_MOIRA_CLIENT:
         module.fail_json(msg=MISSING_MOIRA_CLIENT)

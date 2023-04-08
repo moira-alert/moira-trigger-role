@@ -1,6 +1,11 @@
 name: Tests
 
-on: [push]
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
 
 jobs:
   run_tests:
@@ -14,6 +19,7 @@ jobs:
         cache: "pip"
     - name: Install dependencies
       run: |
+        python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Ansible tests
       run: |

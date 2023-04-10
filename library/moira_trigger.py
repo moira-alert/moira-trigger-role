@@ -24,6 +24,7 @@
 
 from ansible.module_utils.basic import AnsibleModule
 from functools import wraps
+import json
 
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
@@ -214,7 +215,7 @@ result:
 
 
 try:
-    from moira_client import Moira
+    from moira_client import Moira, HTTPError
 
     HAS_MOIRA_CLIENT = True
 except ImportError:
@@ -257,12 +258,23 @@ def handle_exception(function):
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
+        except HTTPError as occurred:
+            return {
+                'failed': {
+                    'method': function.__name__,
+                    'error': occurred.__class__.__name__,
+                    'details': str(occurred),
+                    'response_text': json.loads(occurred.response.text)
+                }
+            }
         except Exception as occurred:
             return {
                 'failed': {
                     'method': function.__name__,
                     'error': occurred.__class__.__name__,
-                    'details': str(occurred)}}
+                    'details': str(occurred)
+                }
+            }
 
     return wrapper
 

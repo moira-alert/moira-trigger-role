@@ -1,5 +1,3 @@
-[![Build Status](https://travis-ci.org/moira-alert/moira-trigger-role.svg?branch=master)](https://travis-ci.org/moira-alert/moira-trigger-role)
-
 # moira-trigger-role
 
 If you're new here, better check out our main [README](https://github.com/moira-alert/moira/blob/master/README.md).

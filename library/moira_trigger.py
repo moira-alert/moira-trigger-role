@@ -392,29 +392,34 @@ class MoiraTriggerManager(object):
             JSON with diagnostic info if failed.
 
         '''
-
+        result = {}
         if not moira_trigger.has_image():
-
             trigger = self.client.trigger.create(
                 **moira_trigger.preimage)
 
-            result = 'trigger has been created'
+            msg = 'trigger has been created'
 
             if not self.dry_run:
                 self.has_diff = True
-                trigger.save()
+                response = trigger.save()
+                if response['checkResult']:
+                    result['WARN'] = response['checkResult']
 
         else:
-
             trigger = moira_trigger.image
-            result = 'trigger has been updated'
 
-        if not self.dry_run and \
-                moira_trigger.merge_with(trigger):
-            self.has_diff = True
-            trigger.update()
+            if not self.dry_run and moira_trigger.merge_with(trigger):
+                self.has_diff = True
+                response = trigger.update()
+                if response['checkResult']:
+                    result['WARN'] = response['checkResult']
+                msg = 'trigger has been updated'
+            else:
+                msg = 'trigger has not been updated, it is already consistent'
 
-        return {moira_trigger._id: result}
+        result[moira_trigger._id] = msg
+
+        return result
 
     @handle_exception
     def define_state(self, state, moira_trigger):

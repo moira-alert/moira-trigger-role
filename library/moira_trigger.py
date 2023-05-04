@@ -24,6 +24,7 @@
 
 from ansible.module_utils.basic import AnsibleModule
 from functools import wraps
+import json
 
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
@@ -214,7 +215,7 @@ result:
 
 
 try:
-    from moira_client import Moira
+    from moira_client import Moira, HTTPError
 
     HAS_MOIRA_CLIENT = True
 except ImportError:
@@ -257,12 +258,23 @@ def handle_exception(function):
     def wrapper(*args, **kwargs):
         try:
             return function(*args, **kwargs)
+        except HTTPError as occurred:
+            return {
+                'failed': {
+                    'method': function.__name__,
+                    'error': occurred.__class__.__name__,
+                    'details': str(occurred),
+                    'response_text': json.loads(occurred.response.text)
+                }
+            }
         except Exception as occurred:
             return {
                 'failed': {
                     'method': function.__name__,
                     'error': occurred.__class__.__name__,
-                    'details': str(occurred)}}
+                    'details': str(occurred)
+                }
+            }
 
     return wrapper
 
@@ -380,29 +392,34 @@ class MoiraTriggerManager(object):
             JSON with diagnostic info if failed.
 
         '''
-
+        result = {}
         if not moira_trigger.has_image():
-
             trigger = self.client.trigger.create(
                 **moira_trigger.preimage)
 
-            result = 'trigger has been created'
+            msg = 'trigger has been created'
 
             if not self.dry_run:
                 self.has_diff = True
-                trigger.save()
+                response = trigger.save()
+                if response['checkResult']:
+                    result['WARN'] = response['checkResult']
 
         else:
-
             trigger = moira_trigger.image
-            result = 'trigger has been updated'
 
-        if not self.dry_run and \
-                moira_trigger.merge_with(trigger):
-            self.has_diff = True
-            trigger.update()
+            if not self.dry_run and moira_trigger.merge_with(trigger):
+                self.has_diff = True
+                response = trigger.update()
+                if response['checkResult']:
+                    result['WARN'] = response['checkResult']
+                msg = 'trigger has been updated'
+            else:
+                msg = 'trigger has not been updated, it is already consistent'
 
-        return {moira_trigger._id: result}
+        result[moira_trigger._id] = msg
+
+        return result
 
     @handle_exception
     def define_state(self, state, moira_trigger):

@@ -27,12 +27,13 @@ class MoiraApiHandler(BaseHTTPRequestHandler):
 
             api_trigger_path = self.path.split('/')
             trigger_id = api_trigger_path[2]
-            state = '{"trigger_id":"%s"}' % trigger_id
-
+            state = {
+                'trigger_id': trigger_id
+            }
             self.log_message(
                 'Handling: MoiraTrigger.has_image for %s' % trigger_id)
 
-            self.wfile.write(state.encode())
+            self.wfile.write(json.dumps(state).encode())
 
     def do_PUT(self):
 
@@ -46,12 +47,15 @@ class MoiraApiHandler(BaseHTTPRequestHandler):
 
         if 'id' in post_dict:
 
-            testid = post_dict['id']
-            response = '{"id":"%s"}' % testid
+            test_id = post_dict['id']
+            response = {
+                'id': test_id,
+                'checkResult': ''
+            }
             self.log_message(
-                'Handling: MoiraTriggerManager.edit for %s' % testid)
+                'Handling: MoiraTriggerManager.edit for %s' % test_id)
 
-            self.wfile.write(response.encode())
+            self.wfile.write(json.dumps(response).encode())
 
 if __name__ == "__main__":
 

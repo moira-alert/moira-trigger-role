@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-# (c) 2017, SKB Kontur.
+# (c) 2023, SKB Kontur.
 #
 # This file is part of Ansible
 #

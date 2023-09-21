@@ -19,6 +19,7 @@
     ttl: '{{ item.ttl | default(omit) }}' # Time to Live (in seconds) (int)
     ttl_state: '{{ item.ttl_state | default(omit) }}' # Trigger state at the expiration of 'ttl' (string)
     is_remote: '{{ item.is_remote | default(omit) }}' # Use remote storage (bool)
+    trigger_source: '{{ item.trigger_source | default(omit) }}' # Specify trigger source, override is_remote (str)
     desc: '{{ item.desc | default(omit) }}' # Trigger description (string)
     mute_new_metrics: '{{ item.mute_new_metrics | default(omit) }}' # Mute new metrics (bool)
     disabled_days: '{{ item.disabled_days | default(omit) }}' # Days for trigger to be in silent mode (list)

@@ -123,7 +123,7 @@ options:
     choices: ['NODATA', 'DEL', 'ERROR', 'WARN', 'OK']
   is_remote:
     description:
-      - Use remote storage.
+      - Use remote storage. Deprecated: use 'trigger_source' instead
     required: False
     default: False
   trigger_source:

@@ -131,6 +131,10 @@ options:
       - Specify trigger source, overrides is_remote
     required: False
     choices: ['graphite_local', 'graphite_remote', 'prometheus_remote']
+  cluster_id:
+    description:
+      - Specify cluster id
+    required: False
   desc:
     description:
       - Trigger description.
@@ -523,6 +527,10 @@ def main():
             'type': 'str',
             'required': False,
             'choices': ['graphite_local', 'graphite_remote', 'prometheus_remote']},
+        'cluster_id': {
+            'type': 'str',
+            'required': False,
+            'default': None},
         'desc': {
             'type': 'str',
             'required': False,

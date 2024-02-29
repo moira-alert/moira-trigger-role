@@ -80,6 +80,8 @@ Predefine following parameters inside your vars files. Working examples can be f
 | ttl | Time to Live (in seconds) | Int | False | N/A | 600 | 600 |
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> DEL <br> ERROR <br> WARN <br> OK | NODATA | WARN |
 | is_remote | Use remote storage | Bool | False | True <br> False | False | False |
+| trigger_source | Specify trigger source, overrides is_remote | String | False | graphite_local <br>  graphite_remote <br> prometheus_remote | None | graphite_local
+| cluster_id | Specify cluster id | String | False | N/A | None | default
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
 | mute_new_metrics | Mute new metrics | Bool | False | True <br> False | False | False |
 | disabled_days | Days for trigger to be in silent mode | List | False | N/A | Empty list | - Mon <br> - Wed |

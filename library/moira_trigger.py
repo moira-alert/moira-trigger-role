@@ -133,7 +133,7 @@ options:
     choices: ['graphite_local', 'graphite_remote', 'prometheus_remote']
   cluster_id:
     description:
-      - Specify cluster id
+      - Specify cluster id. List of available clusters can be seen in api at `https://your-moira-url/api/config`
     required: False
   desc:
     description:
@@ -589,6 +589,7 @@ def main():
         'tags': module.params['tags'],
         'mute_new_metrics': module.params['mute_new_metrics'],
         'trigger_source': module.params['trigger_source'],
+        'cluster_id': module.params['cluster_id'],
         'sched': get_schedule(
             module.params['start_hour'],
             module.params['start_minute'],

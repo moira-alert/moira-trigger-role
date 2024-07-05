@@ -77,13 +77,13 @@ Predefine following parameters inside your vars files. Working examples can be f
 | error_value | Value to set ERROR status | Float | False | N/A | None | 600 |
 | trigger_type | Type of a trigger | String | False | rising <br> falling <br> expression | N/A | rising |
 | expression | [C-like expression](https://github.com/Knetic/govaluate) | String | False | N/A | Empty string | t1 >= 10 ? ERROR : (t1 >= 1 ? WARN : OK) |
-| ttl | Time to Live (in seconds) | Int | False | N/A | 600 | 600 |
+| ttl | When there are no metrics for trigger, Moira will switch metric to TTLState state after TTL seconds | Int | False | N/A | 600 | 600 |
 | ttl_state | Trigger state at the expiration of 'ttl' | String | False | NODATA <br> DEL <br> ERROR <br> WARN <br> OK | NODATA | WARN |
-| is_remote | Use remote storage | Bool | False | True <br> False | False | False |
+| is_remote | Use remote storage. **Deprecated, use `trigger_source` instead** | Bool | False | True <br> False | False | False |
 | trigger_source | Specify trigger source, overrides is_remote | String | False | graphite_local <br>  graphite_remote <br> prometheus_remote | None | graphite_local
 | cluster_id | Specify cluster id | String | False | N/A | None | default
 | desc | Trigger description | String | False | N/A | Empty string | trigger test description |
-| mute_new_metrics | Mute new metrics | Bool | False | True <br> False | False | False |
+| mute_new_metrics | If true, first event NODATA → OK will be omitted | Bool | False | True <br> False | False | False |
 | disabled_days | Days for trigger to be in silent mode | List | False | N/A | Empty list | - Mon <br> - Wed |
 | timezone_offset | Timezone offset (minutes) | Int | False | N/A | 0 | -180 |
 | start_hour | Start hour to send alerts | Int | False | N/A | 0 | 9 |

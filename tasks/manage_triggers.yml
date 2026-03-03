@@ -9,7 +9,7 @@
     login: '{{ moira_auth_login | default(omit) }}' # Auth Login (Basic Auth) (string)
     state: '{{ item.state | default("present") }}' # Desired state of a trigger (string)
     id: '{{ item.id }}' # Trigger id (string)
-    team_id: '{{ item.team_id }}' # Owner team's id (string)
+    team_id: '{{ item.team_id | default(omit) }}' # Owner team's id (string)
     name: '{{ item.name }}' # Trigger name (string)
     targets: '{{ item.targets }}' # List of trigger tags (list)
     tags: '{{ item.tags }}' # List of trigger targets (list)

@@ -13,7 +13,11 @@
     targets: '{{ item.targets }}' # List of trigger tags (list)
     tags: '{{ item.tags }}' # List of trigger targets (list)
     warn_value: '{{ item.warn_value | default(omit) }}' # Value to set WARN status (float)
+    warn_for: '{{ item.warn_for | default(omit) }}' # float warning value; the condition must continuously evaluate to this status for this many seconds before the alert fires (0 = immediately).
+    warn_keep_firing_for: '{{ item.warn_keep_firing_for | default(omit) }}' # float warning value; the alert stays active this many seconds after the condition no longer evaluates to this status.
     error_value: '{{ item.error_value | default(omit) }}' # Value to set ERROR status (float)
+    error_for: '{{ item.error_for | default(omit) }}' # float error value; the condition must continuously evaluate to this status for this many seconds before the alert fires (0 = immediately).
+    error_keep_firing_for: '{{ item.error_keep_firing_for | default(omit) }}' # float error value; the alert stays active this many seconds after the condition no longer evaluates to this status.
     trigger_type: '{{ item.trigger_type | default(omit) }}' # Type of a trigger (string)
     expression: '{{ item.expression | default(omit) }}' # C-like expression (string)
     ttl: '{{ item.ttl | default(omit) }}' # Time to Live (in seconds) (int)

@@ -78,6 +78,11 @@ options:
     description:
       - Trigger id.
     required: True
+  team_id:
+    description:
+      - Team id of a team that owns this trigger.
+      required: False
+      default: None
   name:
     description:
       - Trigger name.
@@ -485,6 +490,10 @@ def main():
         'id': {
             'type': 'str',
             'required': True},
+        'team_id': {
+            'type': 'str',
+            'required': False,
+            'default': None},
         'name': {
             'type': 'str',
             'required': True},
@@ -576,6 +585,7 @@ def main():
 
     preimage = {
         'id': module.params['id'],
+        'team_id': module.params['team_id'],
         'name': module.params['name'],
         'targets': module.params['targets'],
         'warn_value': module.params['warn_value'],

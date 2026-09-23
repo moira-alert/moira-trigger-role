@@ -1,6 +1,7 @@
 ServiceNameTriggers:
 
   - id: ProjectServiceNameLoadAverage
+    team_id: StagingTeam
     name: Project.ServiceName.LoadAverage
     targets:
       - Project.ServiceName.*.loadavg.load_normalized
@@ -17,6 +18,7 @@ ServiceNameTriggers:
     alone_metrics: {'t1': True, 't2': False}
 
   - id: ProjectServiceNameMemoryfree
+    team_id: StagingTeam
     name: Project.ServiceName.MemoryFree
     targets:
       - Project.ServiceName.*.memory.MemFree
@@ -32,6 +34,7 @@ ServiceNameTriggers:
     end_hour: 17
 
   - id: ProjectServiceNameFreediskspace
+    team_id: StagingTeam
     name: Project.ServiceName.FreeDiskSpace
     targets:
       - Project.ServiceName.*.disk.*.gigabyte_percentfree

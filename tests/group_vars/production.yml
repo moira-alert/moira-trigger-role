@@ -1,6 +1,7 @@
 ServiceNameTriggers:
 
   - id: ProjectServiceNameLoadAverage
+    team_id: ProdTeam
     name: Project.ServiceName.LoadAverage
     targets:
       - Project.ServiceName.*.loadavg.load_normalized
@@ -11,6 +12,7 @@ ServiceNameTriggers:
     desc: This trigger has been created using Ansible Moira library
 
   - id: ProjectServiceNameMemoryfree
+    team_id: ProdTeam
     name: Project.ServiceName.MemoryFree
     targets:
       - Project.ServiceName.*.memory.MemFree
@@ -21,6 +23,7 @@ ServiceNameTriggers:
     desc: This trigger has been created using Ansible Moira library
 
   - id: ProjectServiceNameFreediskspace
+    team_id: ProdTeam
     name: Project.ServiceName.FreeDiskSpace
     targets:
       - Project.ServiceName.*.disk.*.gigabyte_percentfree

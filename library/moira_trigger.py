@@ -526,11 +526,11 @@ def main():
         'warn_value': {
             'type': 'float',
             'required': False,
-            'default': None},
-        'warn_keep_firing_for': {
-            'type': 'int',
-            'required': False,
-            'default': None},
+            'default': 0},
+        # 'warn_keep_firing_for': {
+        #     'type': 'int',
+        #     'required': False,
+        #     'default': None},
         'warn_for': {
             'type': 'int',
             'required': False,
@@ -539,14 +539,14 @@ def main():
             'type': 'float',
             'required': False,
             'default': None},
-        'error_for': {
-            'type': 'int',
-            'required': False,
-            'default': None},
-        'error_keep_firing_for': {
-            'type': 'int',
-            'required': False,
-            'default': None},
+        # 'error_for': {
+        #     'type': 'int',
+        #     'required': False,
+        #     'default': None},
+        # 'error_keep_firing_for': {
+        #     'type': 'int',
+        #     'required': False,
+        #     'default': None},
         'trigger_type': {
             'type': 'str',
             'choices': ['rising', 'falling', 'expression'],

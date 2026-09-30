@@ -534,7 +534,7 @@ def main():
         'warn_for': {
             'type': 'int',
             'required': False,
-            'default': 0},
+            'default': None},
         'error_value': {
             'type': 'float',
             'required': False,

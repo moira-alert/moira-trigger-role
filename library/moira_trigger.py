@@ -527,26 +527,26 @@ def main():
             'type': 'float',
             'required': False,
             'default': None},
-        # 'warn_keep_firing_for': {
-        #     'type': 'int',
-        #     'required': False,
-        #     'default': None},
-        # 'warn_for': {
-        #     'type': 'int',
-        #     'required': False,
-        #     'default': 0},
+        'warn_keep_firing_for': {
+            'type': 'int',
+            'required': False,
+            'default': None},
+        'warn_for': {
+            'type': 'int',
+            'required': False,
+            'default': 0},
         'error_value': {
             'type': 'float',
             'required': False,
             'default': None},
-        # 'error_for': {
-        #     'type': 'int',
-        #     'required': False,
-        #     'default': None},
-        # 'error_keep_firing_for': {
-        #     'type': 'int',
-        #     'required': False,
-        #     'default': None},
+        'error_for': {
+            'type': 'int',
+            'required': False,
+            'default': None},
+        'error_keep_firing_for': {
+            'type': 'int',
+            'required': False,
+            'default': None},
         'trigger_type': {
             'type': 'str',
             'choices': ['rising', 'falling', 'expression'],
@@ -649,14 +649,14 @@ def main():
     if module.params['warn_for'] is not None:
         preimage['warn_for'] = module.params['warn_for']
 
-    # if module.params['warn_keep_firing_for'] is not None:
-    #     preimage['warn_keep_firing_for'] = module.params['warn_keep_firing_for']
-    #
-    # if module.params['error_for'] is not None:
-    #     preimage['error_for'] = module.params['error_for']
-    #
-    # if module.params['error_keep_firing_for'] is not None:
-    #     preimage['error_keep_firing_for'] = module.params['error_keep_firing_for']
+    if module.params['warn_keep_firing_for'] is not None:
+        preimage['warn_keep_firing_for'] = module.params['warn_keep_firing_for']
+
+    if module.params['error_for'] is not None:
+        preimage['error_for'] = module.params['error_for']
+
+    if module.params['error_keep_firing_for'] is not None:
+        preimage['error_keep_firing_for'] = module.params['error_keep_firing_for']
 
     if module.params['alone_metrics'] is not None:
         preimage['alone_metrics'] = module.params['alone_metrics']

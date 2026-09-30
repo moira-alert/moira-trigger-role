@@ -2,8 +2,9 @@
 
 all: install triggers_staging triggers_production
 
-install: # install moira-trigger-role
-	ansible-galaxy install moira-alert.moira-trigger-role --roles-path=roles --force
+install: # link local moira-trigger-role instead of downloading released version from Ansible Galaxy
+	mkdir -p roles
+	ln -sfn ../.. roles/moira-alert.moira-trigger-role
 
 triggers_staging: # manage triggers for staging
 	ansible-playbook -i staging --connection=local -vv site.yml

@@ -625,7 +625,11 @@ def main():
         'name': module.params['name'],
         'targets': module.params['targets'],
         'warn_value': module.params['warn_value'],
+        'warn_for': module.params['warn_for'],
+        'warn_keep_firing_for': module.params['warn_keep_firing_for'],
         'error_value': module.params['error_value'],
+        'error_for': module.params['error_for'],
+        'error_keep_firing_for': module.params['error_keep_firing_for'],
         'ttl': module.params['ttl'],
         'ttl_state': module.params['ttl_state'],
         'expression': module.params['expression'],
@@ -645,18 +649,6 @@ def main():
             module.params['timezone_offset']
         ),
     }
-
-    if module.params['warn_for'] is not None:
-        preimage['warn_for'] = module.params['warn_for']
-
-    if module.params['warn_keep_firing_for'] is not None:
-        preimage['warn_keep_firing_for'] = module.params['warn_keep_firing_for']
-
-    if module.params['error_for'] is not None:
-        preimage['error_for'] = module.params['error_for']
-
-    if module.params['error_keep_firing_for'] is not None:
-        preimage['error_keep_firing_for'] = module.params['error_keep_firing_for']
 
     if module.params['alone_metrics'] is not None:
         preimage['alone_metrics'] = module.params['alone_metrics']

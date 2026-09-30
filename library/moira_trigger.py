@@ -621,6 +621,7 @@ def main():
 
     preimage = {
         'id': module.params['id'],
+        'team_id': module.params['team_id'],
         'name': module.params['name'],
         'targets': module.params['targets'],
         'warn_value': module.params['warn_value'],
@@ -645,14 +646,17 @@ def main():
         ),
     }
 
-    for field in (
-            'warn_for',
-            'warn_keep_firing_for',
-            'error_for',
-            'error_keep_firing_for',
-    ):
-        if module.params[field] is not None:
-            preimage[field] = module.params[field]
+    if module.params['warn_for'] is not None:
+        preimage['warn_for'] = module.params['warn_for']
+
+    # if module.params['warn_keep_firing_for'] is not None:
+    #     preimage['warn_keep_firing_for'] = module.params['warn_keep_firing_for']
+    #
+    # if module.params['error_for'] is not None:
+    #     preimage['error_for'] = module.params['error_for']
+    #
+    # if module.params['error_keep_firing_for'] is not None:
+    #     preimage['error_keep_firing_for'] = module.params['error_keep_firing_for']
 
     if module.params['alone_metrics'] is not None:
         preimage['alone_metrics'] = module.params['alone_metrics']

@@ -100,11 +100,31 @@ options:
       - Value to set WARN status.
     required: False
     default: None
+  warn_for:
+    description:
+      - Warning value; the condition must continuously evaluate to WARN status for this many seconds before the alert fires.
+    required: False
+    default: None 
+  warn_keep_firing_for:
+    description:
+      - Warning value; the alert stays active WARN many seconds after the condition no longer evaluates to this status.
+    required: False
+    default: None  
   error_value:
     description:
       - Value to set ERROR status.
     required: False
     default: None
+  error_for:
+    description:
+      - Error value; the condition must continuously evaluate to ERROR status for this many seconds before the alert fires.
+    required: False
+    default: None
+  error_keep_firing_for:
+    description:
+      - Error value; the alert stays active ERR many seconds after the condition no longer evaluates to this status.
+    required: False
+    default: None       
   trigger_type:
     description:
       - Type of a trigger.
@@ -507,8 +527,24 @@ def main():
             'type': 'float',
             'required': False,
             'default': None},
+        'warn_keep_firing_for': {
+            'type': 'int',
+            'required': False,
+            'default': None},
+        'warn_for': {
+            'type': 'int',
+            'required': False,
+            'default': None},
         'error_value': {
             'type': 'float',
+            'required': False,
+            'default': None},
+        'error_for': {
+            'type': 'int',
+            'required': False,
+            'default': None},
+        'error_keep_firing_for': {
+            'type': 'int',
             'required': False,
             'default': None},
         'trigger_type': {

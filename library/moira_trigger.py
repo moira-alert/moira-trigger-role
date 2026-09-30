@@ -531,10 +531,10 @@ def main():
         #     'type': 'int',
         #     'required': False,
         #     'default': None},
-        'warn_for': {
-            'type': 'int',
-            'required': False,
-            'default': 0},
+        # 'warn_for': {
+        #     'type': 'int',
+        #     'required': False,
+        #     'default': 0},
         'error_value': {
             'type': 'float',
             'required': False,

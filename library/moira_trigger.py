@@ -621,7 +621,7 @@ def main():
 
     preimage = {
         'id': module.params['id'],
-        'team_id': module.params['team_id'],
+        'team_id': module.params.get['team_id'],
         'name': module.params['name'],
         'targets': module.params['targets'],
         'warn_value': module.params['warn_value'],

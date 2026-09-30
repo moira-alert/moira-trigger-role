@@ -528,11 +528,11 @@ def main():
             'required': False,
             'default': None},
         'warn_keep_firing_for': {
-            'type': 'float',
+            'type': 'int',
             'required': False,
             'default': None},
         'warn_for': {
-            'type': 'float',
+            'type': 'int',
             'required': False,
             'default': None},
         'error_value': {
@@ -540,11 +540,11 @@ def main():
             'required': False,
             'default': None},
         'error_for': {
-            'type': 'float',
+            'type': 'int',
             'required': False,
             'default': None},
         'error_keep_firing_for': {
-            'type': 'float',
+            'type': 'int',
             'required': False,
             'default': None},
         'trigger_type': {

@@ -99,3 +99,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# ansible roles symlinked by tests/Makefile
+tests/roles/

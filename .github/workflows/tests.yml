@@ -12,7 +12,7 @@ permissions:
   contents: read
 
 jobs:
-  run_tests:
+  unit_tests:
     runs-on: ubuntu-24.04
     steps:
     - uses: actions/checkout@v4
@@ -31,10 +31,24 @@ jobs:
     - name: Unit tests
       run: |
         python -m pytest tests/unit -v
-    - name: Lint
+
+  integration_tests:
+    runs-on: ubuntu-24.04
+    needs: unit_tests
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: "pip"
+        cache-dependency-path: |
+          requirements.txt
+          requirements-test.txt
+    - name: Install dependencies
       run: |
-        yamllint -c .yamllint .
-        ansible-lint -c .ansible-lint
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt -r requirements-test.txt
     - name: Ansible integration tests
       run: |
         cd ./tests/

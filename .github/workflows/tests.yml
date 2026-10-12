@@ -1,0 +1,64 @@
+name: Tests
+
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  unit_tests:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: "pip"
+        cache-dependency-path: |
+          requirements.txt
+          requirements-test.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt -r requirements-test.txt
+    - name: Unit tests
+      run: |
+        python -m pytest tests/unit -v
+
+  integration_tests:
+    runs-on: ubuntu-24.04
+    needs: unit_tests
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: "pip"
+        cache-dependency-path: |
+          requirements.txt
+          requirements-test.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt -r requirements-test.txt
+    - name: Ansible integration tests
+      run: |
+        cd ./tests/
+        python3 ./files/fake_api.py &
+        for i in $(seq 1 30); do
+          if curl -sf http://localhost:8081/ >/dev/null 2>&1; then
+            echo "fake api is ready"
+            break
+          fi
+          sleep 1
+        done
+        curl -sf http://localhost:8081/ >/dev/null || (echo "fake api failed to start" && exit 1)
+        make install triggers_staging triggers_production verify

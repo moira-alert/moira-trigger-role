@@ -22,9 +22,11 @@
 
 '''
 
-from ansible.module_utils.basic import AnsibleModule
-from functools import wraps
 import json
+import traceback
+from functools import wraps
+
+from ansible.module_utils.basic import AnsibleModule
 
 ANSIBLE_METADATA = {'metadata_version': '1.0',
                     'status': ['preview'],
@@ -38,33 +40,40 @@ description:
     - Create new triggers.
     - Edit existing triggers parameters.
     - Delete triggers.
-author: 'SKB Kontur'
+author:
+    - 'SKB Kontur'
 requirements:
-    - 'python >= 2.7'
-    - 'moira-python-client >= 2.0'
+    - 'python >= 3.6'
+    - 'moira-python-client >= 5.2.1'
+version_added: '1.0.0'
 options:
   api_url:
     description:
       - Url of Moira API.
+    type: str
     required: True
   auth_custom:
     description:
       - Auth custom headers.
+    type: dict
     required: False
     default: None
   auth_user:
     description:
       - Auth User.
+    type: str
     required: False
     default: None
   auth_pass:
     description:
       - Auth Password.
+    type: str
     required: False
     default: None
   login:
     description:
       - Auth Login.
+    type: str
     required: False
     default: None
   state:
@@ -72,139 +81,181 @@ options:
       - Desired state of a trigger.
       - Use state 'present' to create and edit existing triggers.
       - Use state 'absent' to delete triggers.
+    type: str
     required: True
     choices: ['present', 'absent']
   id:
     description:
       - Trigger id.
+    type: str
     required: True
   team_id:
     description:
       - Team id of a team that owns this trigger.
-      required: False
-      default: None
+    type: str
+    required: False
+    default: None
   name:
     description:
       - Trigger name.
+    type: str
     required: True
   tags:
     description:
       - List of trigger tags.
+    type: list
+    elements: str
     required: True
   targets:
     description:
       - List of trigger targets.
+    type: list
+    elements: str
     required: True
   warn_value:
     description:
       - Value to set WARN status.
+    type: float
     required: False
     default: None
   warn_for:
     description:
       - Warning value; the condition must continuously evaluate to WARN status for this many seconds before the alert fires.
+    type: int
     required: False
-    default: None 
+    default: None
   warn_keep_firing_for:
     description:
       - Warning value; the alert stays active WARN many seconds after the condition no longer evaluates to this status.
+    type: int
     required: False
-    default: None  
+    default: None
   error_value:
     description:
       - Value to set ERROR status.
+    type: float
     required: False
     default: None
   error_for:
     description:
       - Error value; the condition must continuously evaluate to ERROR status for this many seconds before the alert fires.
+    type: int
     required: False
     default: None
   error_keep_firing_for:
     description:
       - Error value; the alert stays active ERR many seconds after the condition no longer evaluates to this status.
+    type: int
     required: False
-    default: None       
+    default: None
   trigger_type:
     description:
       - Type of a trigger.
+    type: str
     required: False
     choices: ['rising', 'falling', 'expression']
   expression:
     description:
       - C-like expression.
+    type: str
     required: False
     default: ''
   ttl:
     description:
       - Time To Live.
+    type: int
     required: False
     default: 600
   ttl_state:
     description:
       - Trigger state at the expiration of TTL.
+    type: str
     required: False
     default: 'NODATA'
     choices: ['NODATA', 'DEL', 'ERROR', 'WARN', 'OK']
   is_remote:
     description:
       - Use remote storage. Deprecated: use 'trigger_source' instead
+    type: bool
     required: False
     default: False
   trigger_source:
     description:
       - Specify trigger source, overrides is_remote
+    type: str
     required: False
     choices: ['graphite_local', 'graphite_remote', 'prometheus_remote']
   cluster_id:
     description:
       - Specify cluster id. List of available clusters can be seen in api at `https://your-moira-url/api/config`
+    type: str
     required: False
   desc:
     description:
       - Trigger description.
+    type: str
     required: False
     default: ''
   mute_new_metrics:
     description:
       - Mute new metrics.
+    type: bool
     required: False
     default: False
   disabled_days:
     description:
       - Days for trigger to be in silent mode.
+    type: list
+    elements: str
     required: False
     default: []
   timezone_offset:
     description:
       - Timezone offset (minutes)
+    type: int
     required: False
     default: 0
   start_hour:
     description:
       - Start hour to send alerts.
+    type: int
     required: False
     default: 0
   start_minute:
     description:
       - Start minute to send alerts.
+    type: int
     required: False
     default: 0
   end_hour:
     description:
       - End hour to send alerts.
+    type: int
     required: False
     default: 23
   end_minute:
     description:
       - End minute to send alerts.
+    type: int
     required: False
     default: 59
   alone_metrics:
     description:
       - Targets with alone metrics.
+    type: dict
     required: False
     default: None
+  defined_fields:
+    description:
+      - Names of the trigger fields explicitly provided by the caller.
+      - When set, only these fields are applied and all other trigger
+        attributes are left untouched. Used by the role to implement a
+        partial merge.
+    type: list
+    elements: str
+    required: False
+    default: []
+    version_added: '1.0.0'
 notes:
     - More details at https://github.com/moira-alert/moira-trigger-role.
 '''
@@ -226,8 +277,8 @@ EXAMPLES = '''
        - 'Service'
      targets: '{{ item.targets }}'
      disabled_days:
-       ? Mon
-       ? Wed
+       - Mon
+       - Wed
   with_items:
     - id: trigger_1
       name: Trigger 1
@@ -250,6 +301,8 @@ result:
 
 try:
     from moira_client import Moira, HTTPError
+    from moira_client.client import (MoiraApiError, InvalidJSONError,
+                                     ResponseStructureError)
 
     HAS_MOIRA_CLIENT = True
 except ImportError:
@@ -259,24 +312,149 @@ except ImportError:
         'Make sure you have moira-python-client installed: '
         'pip install moira-python-client')
 
+    class _UndefinedClientError(Exception):
+        pass
+
+    HTTPError = MoiraApiError = InvalidJSONError = ResponseStructureError = \
+        _UndefinedClientError
+
 DAYS_OF_WEEK = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 MINUTES_IN_HOUR = 60
 
+# Fields that are applied only when they are explicitly provided by the caller
+# (used to implement partial merge: omitted fields are left untouched).
+OPTIONAL_FIELDS = (
+    'team_id', 'warn_value', 'warn_for', 'warn_keep_firing_for',
+    'error_value', 'error_for', 'error_keep_firing_for', 'ttl', 'ttl_state',
+    'expression', 'is_remote', 'trigger_type', 'desc', 'mute_new_metrics',
+    'trigger_source', 'cluster_id', 'alone_metrics',
+)
+
+# Fields that are combined into the single ``sched`` trigger attribute.
+SCHEDULE_FIELDS = (
+    'start_hour', 'start_minute', 'end_hour', 'end_minute',
+    'timezone_offset', 'disabled_days',
+)
+
+
+def get_schedule_days(disabled_days):
+    '''Build the per-day schedule entries.
+
+    Args:
+        disabled_days (set): days with alerts disabled.
+
+    Returns:
+        list: schedule day entries.
+
+    '''
+
+    return [
+        {'enabled': day not in disabled_days, 'name': day}
+        for day in DAYS_OF_WEEK
+    ]
+
 
 def get_schedule(start_hour, start_minute, end_hour, end_minute, disabled_days, timezone_offset):
-    days = []
-    for day in DAYS_OF_WEEK:
-        day_info = {
-            'enabled': True if day not in disabled_days else False,
-            'name': day
-        }
-        days.append(day_info)
+    days = get_schedule_days(disabled_days)
     return {
         'days': days,
         'startOffset': start_hour * MINUTES_IN_HOUR + start_minute,
         'endOffset': end_hour * MINUTES_IN_HOUR + end_minute,
         'tzOffset': timezone_offset,
     }
+
+
+def overlay_schedule(base_sched, defined):
+    '''Overlay explicitly defined schedule subfields on an existing schedule.
+
+    Only the subfields named in ``defined`` are changed; all other schedule
+    attributes are taken from ``base_sched``. This is what makes partial
+    schedule updates safe: setting only ``disabled_days`` must not reset an
+    existing custom ``start_hour``/``end_hour`` back to the defaults.
+
+    Args:
+        base_sched (dict or None): the schedule currently stored in Moira.
+        defined (dict): schedule subfield values explicitly provided by the
+            caller (a subset of SCHEDULE_FIELDS).
+
+    Returns:
+        dict: the merged schedule.
+
+    '''
+
+    base = (dict(base_sched) if base_sched
+            else get_schedule(0, 0, 23, 59, [], 0))
+
+    if 'disabled_days' in defined:
+        base['days'] = get_schedule_days(set(defined['disabled_days']))
+
+    if 'start_hour' in defined or 'start_minute' in defined:
+        base_start = base.get('startOffset', 0)
+        hour = defined.get('start_hour', base_start // MINUTES_IN_HOUR)
+        minute = defined.get('start_minute', base_start % MINUTES_IN_HOUR)
+        base['startOffset'] = hour * MINUTES_IN_HOUR + minute
+
+    if 'end_hour' in defined or 'end_minute' in defined:
+        base_end = base.get('endOffset', 23 * MINUTES_IN_HOUR + 59)
+        hour = defined.get('end_hour', base_end // MINUTES_IN_HOUR)
+        minute = defined.get('end_minute', base_end % MINUTES_IN_HOUR)
+        base['endOffset'] = hour * MINUTES_IN_HOUR + minute
+
+    if 'timezone_offset' in defined:
+        base['tzOffset'] = defined['timezone_offset']
+
+    return base
+
+
+def validate_trigger_definition(trigger):
+    '''Validate that an explicitly declared trigger type is consistent.
+
+    Only fields that are actually being applied are checked, so a partial
+    update that leaves other attributes untouched is never rejected.
+
+    Args:
+        trigger (dict): trigger preimage with the fields to be applied.
+
+    Returns:
+        An error message string if the definition is invalid, None otherwise.
+
+    '''
+
+    trigger_type = trigger.get('trigger_type')
+
+    if trigger_type == 'expression':
+        if 'expression' in trigger and not trigger.get('expression'):
+            return ("trigger_type 'expression' requires a non-empty "
+                    "'expression'")
+    elif trigger_type in ('rising', 'falling'):
+        missing = [field for field in ('warn_value', 'error_value')
+                   if field not in trigger or trigger.get(field) is None]
+        if missing:
+            return ("trigger_type '%s' requires %s to be set" %
+                    (trigger_type, ' and '.join(missing)))
+
+    return None
+
+
+def render_response_body(body):
+    '''Render a (possibly non-JSON) API response body for diagnostics.
+
+    Returns:
+        Parsed JSON when possible, decoded text when the body is not JSON,
+        and None when there is nothing to show.
+
+    '''
+
+    if body is None:
+        return None
+    if isinstance(body, (bytes, bytearray)):
+        body = body.decode('utf-8', 'replace')
+    if isinstance(body, str):
+        try:
+            return json.loads(body)
+        except ValueError:
+            return body
+    return body
 
 
 def handle_exception(function):
@@ -286,6 +464,10 @@ def handle_exception(function):
         Default function JSON result on success,
         JSON with diagnostic info otherwise.
 
+    The moira client raises MoiraApiError on HTTP errors and
+    InvalidJSONError/ResponseStructureError on malformed responses. Older
+    versions raised requests' HTTPError, so it is handled as well.
+
     '''
 
     @wraps(function)
@@ -293,12 +475,30 @@ def handle_exception(function):
         try:
             return function(*args, **kwargs)
         except HTTPError as occurred:
+            response = getattr(occurred, 'response', None)
             return {
                 'failed': {
                     'method': function.__name__,
                     'error': occurred.__class__.__name__,
-                    'details': str(occurred),
-                    'response_text': json.loads(occurred.response.text)
+                    'response_text': render_response_body(
+                        getattr(response, 'text', None))
+                }
+            }
+        except MoiraApiError as occurred:
+            return {
+                'failed': {
+                    'method': function.__name__,
+                    'error': occurred.__class__.__name__,
+                    'response_text': render_response_body(
+                        getattr(occurred, 'body', None))
+                }
+            }
+        except (InvalidJSONError, ResponseStructureError) as occurred:
+            return {
+                'failed': {
+                    'method': function.__name__,
+                    'error': occurred.__class__.__name__,
+                    'details': str(getattr(occurred, 'content', occurred))
                 }
             }
         except Exception as occurred:
@@ -306,7 +506,8 @@ def handle_exception(function):
                 'failed': {
                     'method': function.__name__,
                     'error': occurred.__class__.__name__,
-                    'details': str(occurred)
+                    'details': str(occurred),
+                    'traceback': traceback.format_exc()
                 }
             }
 
@@ -359,23 +560,33 @@ class MoiraTrigger(object):
 
         score = 0
 
-        self.preimage['tags'].sort()
-        image.__dict__['tags'].sort()
+        if 'tags' in self.preimage:
+            self.preimage['tags'].sort()
+            image.tags.sort()
 
-        for field in 'name', 'desc':
-            if type(self.preimage[field]) is bytes:
+        for field in ('name', 'desc'):
+            if field in self.preimage and \
+                    isinstance(self.preimage[field], bytes):
                 self.preimage[field] = self.preimage[field].decode("utf-8")
 
+        sched_defined = self.preimage.get('_sched_defined')
+
         for field in self.preimage:
-            if not field == 'id' and not image.__dict__[field] == self.preimage[field]:
+            if field == 'id' or field == '_sched_defined':
+                continue
+            if field == 'sched' and sched_defined is not None:
+                continue
+            if image.__dict__.get(field) != self.preimage[field]:
                 image.__dict__[field] = self.preimage[field]
-                if not field == 'trigger_type':
-                    score += 1
+                score += 1
 
-        if score != 0:
-            return True
+        if sched_defined is not None:
+            target = overlay_schedule(image.sched, sched_defined)
+            if target != image.sched:
+                image.sched = target
+                score += 1
 
-        return False
+        return score != 0
 
 
 class MoiraTriggerManager(object):
@@ -408,9 +619,12 @@ class MoiraTriggerManager(object):
         if not moira_trigger.has_image():
             return {moira_trigger._id: 'no id found for trigger'}
 
-        if not self.dry_run and \
-                self.client.trigger.delete(moira_trigger._id):
-            self.has_diff = True
+        # Report the change regardless of dry_run and ignore the deletion
+        # return value: TriggerManager.delete() inverts its result in the
+        # moira-python-client, so it cannot be trusted.
+        self.has_diff = True
+        if not self.dry_run:
+            self.client.trigger.delete(moira_trigger._id)
 
         return {moira_trigger._id: 'trigger has been removed'}
 
@@ -428,26 +642,28 @@ class MoiraTriggerManager(object):
         '''
         result = {}
         if not moira_trigger.has_image():
-            trigger = self.client.trigger.create(
-                **moira_trigger.preimage)
-
             msg = 'trigger has been created'
+            self.has_diff = True
 
             if not self.dry_run:
-                self.has_diff = True
+                preimage = moira_trigger.preimage.copy()
+                preimage.pop('_sched_defined', None)
+                trigger = self.client.trigger.create(**preimage)
                 response = trigger.save()
-                if response['checkResult']:
+                if response.get('checkResult'):
                     result['WARN'] = response['checkResult']
 
         else:
             trigger = moira_trigger.image
 
-            if not self.dry_run and moira_trigger.merge_with(trigger):
+            if moira_trigger.merge_with(trigger):
                 self.has_diff = True
-                response = trigger.update()
-                if response['checkResult']:
-                    result['WARN'] = response['checkResult']
                 msg = 'trigger has been updated'
+
+                if not self.dry_run:
+                    response = trigger.update()
+                    if response.get('checkResult'):
+                        result['WARN'] = response['checkResult']
             else:
                 msg = 'trigger has not been updated, it is already consistent'
 
@@ -476,6 +692,70 @@ class MoiraTriggerManager(object):
             return self.remove(moira_trigger)
 
 
+def build_preimage(params, defined_fields):
+    '''Build a trigger preimage from module parameters.
+
+    Args:
+        params (dict): module parameters.
+        defined_fields (iterable): names of the fields the caller explicitly
+            provided. When non-empty only these fields are applied (partial
+            merge); an empty value keeps the legacy full-spec behaviour.
+
+    Returns:
+        dict: the trigger preimage.
+
+    '''
+
+    defined = set(defined_fields or [])
+    partial = bool(defined)
+
+    preimage = {'id': params['id']}
+
+    for field in ('name', 'targets', 'tags') + OPTIONAL_FIELDS:
+        if not partial or field in defined:
+            value = params[field]
+            # Without a value the client would infer the trigger type on
+            # creation, so an unset trigger_type must never be compared with
+            # (or sent to) the stored trigger: it is not a field the caller
+            # controls until one is explicitly provided.
+            if field == 'trigger_type' and value is None:
+                continue
+            preimage[field] = value
+
+    if not partial and preimage.get('alone_metrics') is None:
+        del preimage['alone_metrics']
+
+    defined_sched = defined.intersection(SCHEDULE_FIELDS)
+    if not partial:
+        preimage['sched'] = get_schedule(
+            params['start_hour'],
+            params['start_minute'],
+            params['end_hour'],
+            params['end_minute'],
+            set(params['disabled_days']),
+            params['timezone_offset']
+        )
+    elif defined_sched:
+        # A brand new trigger still needs a complete schedule, so a full one
+        # is always built from the caller's values (defaults fill the rest).
+        # ``_sched_defined`` tells the merge to only touch the explicitly
+        # declared subfields of an existing schedule instead of replacing it.
+        preimage['sched'] = get_schedule(
+            params['start_hour'],
+            params['start_minute'],
+            params['end_hour'],
+            params['end_minute'],
+            set(params['disabled_days']),
+            params['timezone_offset']
+        )
+        preimage['_sched_defined'] = {
+            field: params[field]
+            for field in SCHEDULE_FIELDS if field in defined_sched
+        }
+
+    return preimage
+
+
 def main():
     '''Interact with Moira API via Ansible.
 
@@ -493,7 +773,8 @@ def main():
         'auth_user': {
             'type': 'str',
             'required': False,
-            'default': None},
+            'default': None,
+            'no_log': True},
         'auth_pass': {
             'type': 'str',
             'required': False,
@@ -613,45 +894,27 @@ def main():
             'type': 'dict',
             'required': False,
             'default': None},
+        'defined_fields': {
+            'type': 'list',
+            'required': False,
+            'default': []},
     }
 
     module = AnsibleModule(
         argument_spec=fields,
         supports_check_mode=True)
 
-    preimage = {
-        'id': module.params['id'],
-        'team_id': module.params['team_id'],
-        'name': module.params['name'],
-        'targets': module.params['targets'],
-        'warn_value': module.params['warn_value'],
-        'warn_for': module.params['warn_for'],
-        'warn_keep_firing_for': module.params['warn_keep_firing_for'],
-        'error_value': module.params['error_value'],
-        'error_for': module.params['error_for'],
-        'error_keep_firing_for': module.params['error_keep_firing_for'],
-        'ttl': module.params['ttl'],
-        'ttl_state': module.params['ttl_state'],
-        'expression': module.params['expression'],
-        'is_remote': module.params['is_remote'],
-        'trigger_type': module.params['trigger_type'],
-        'desc': module.params['desc'],
-        'tags': module.params['tags'],
-        'mute_new_metrics': module.params['mute_new_metrics'],
-        'trigger_source': module.params['trigger_source'],
-        'cluster_id': module.params['cluster_id'],
-        'sched': get_schedule(
-            module.params['start_hour'],
-            module.params['start_minute'],
-            module.params['end_hour'],
-            module.params['end_minute'],
-            set(module.params['disabled_days']),
-            module.params['timezone_offset']
-        ),
-    }
+    # When the caller lists the fields it provided, apply only those and leave
+    # every other trigger attribute untouched (partial merge). Direct module
+    # invocations without ``defined_fields`` keep the legacy full-spec
+    # behaviour.
+    preimage = build_preimage(
+        module.params, module.params.get('defined_fields') or [])
 
-    if module.params['alone_metrics'] is not None:
-        preimage['alone_metrics'] = module.params['alone_metrics']
+    if module.params['state'] == 'present':
+        validation_error = validate_trigger_definition(preimage)
+        if validation_error is not None:
+            module.fail_json(msg=validation_error)
 
     if not HAS_MOIRA_CLIENT:
         module.fail_json(msg=MISSING_MOIRA_CLIENT)

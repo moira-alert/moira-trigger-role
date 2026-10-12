@@ -4,7 +4,15 @@ galaxy_info:
   description: Ansible role to create, update and delete Moira triggers
   company: SKB Kontur
   license: MIT
-  min_ansible_version: 2.3
+
+  # Explicitly declare the FQCN of the published role
+  # (https://galaxy.ansible.com/moira-alert/moira-trigger-role).
+  namespace: moira-alert
+  role_name: moira-trigger-role
+
+  # FQCNs (ansible.builtin.*), module DOCUMENTATION 'elements' and the
+  # python3-only moira-python-client require a modern control node.
+  min_ansible_version: 2.10
 
   platforms:
     - name: Ubuntu

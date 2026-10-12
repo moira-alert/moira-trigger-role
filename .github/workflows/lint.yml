@@ -1,0 +1,36 @@
+name: Lint
+
+on:
+  push:
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+        cache: "pip"
+        cache-dependency-path: |
+          requirements.txt
+          requirements-test.txt
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt -r requirements-test.txt
+    - name: YAML lint
+      run: |
+        yamllint -c .yamllint .
+    - name: Ansible lint
+      run: |
+        ansible-lint -c .ansible-lint

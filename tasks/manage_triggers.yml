@@ -11,8 +11,8 @@
     id: '{{ item.id }}' # Trigger id (string)
     team_id: '{{ item.team_id | default(omit) }}' # Owner team's id (string)
     name: '{{ item.name }}' # Trigger name (string)
-    targets: '{{ item.targets }}' # List of trigger tags (list)
-    tags: '{{ item.tags }}' # List of trigger targets (list)
+    targets: '{{ item.targets }}' # List of trigger targets (list)
+    tags: '{{ item.tags }}' # List of trigger tags (list)
     warn_value: '{{ item.warn_value | default(omit) }}' # Value to set WARN status (float)
     warn_for: '{{ item.warn_for | default(omit) }}' # Int warning value; the condition must continuously evaluate to this status for this many seconds before the alert fires (0 = immediately).
     warn_keep_firing_for: '{{ item.warn_keep_firing_for | default(omit) }}' # int warning value; the alert stays active this many seconds after the condition no longer evaluates to this status.
@@ -34,9 +34,10 @@
     start_minute: '{{ item.start_minute | default(omit) }}' # Start minute to send alerts (int)
     end_hour: '{{ item.end_hour | default(omit) }}' # End hour to send alerts (int)
     end_minute: '{{ item.end_minute | default(omit) }}' # End minute to send alerts (int)
-    alone_metrics: '{{ item.alone_metrics | default(omit) }}' # Targets with alone metrics (list)
-  check_mode: '{{ dry_run | default(True) }}'
-  with_items:
-    - '{{ moira_triggers }}'
+    alone_metrics: '{{ item.alone_metrics | default(omit) }}' # Targets with alone metrics (dict)
+    defined_fields: '{{ item.keys() | list }}' # Fields explicitly set by the caller, used for partial merge
+  check_mode: '{{ dry_run | default(true) | bool }}'
+  loop: '{{ moira_triggers }}'
+  register: moira_manage_result
   tags:
     - moira

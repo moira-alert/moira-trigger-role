@@ -1,5 +1,5 @@
-# Always use the latest version of moira-python-client
+# Install a pinned version of moira-python-client on the control node
 - name: be sure moira-python-client is installed
-  pip:
-    name: moira-python-client
-    state: latest
+  ansible.builtin.pip:
+    name: 'moira-python-client=={{ moira_python_client_version }}'
+    state: present

@@ -1,0 +1,16 @@
+---
+profile: min
+exclude_paths:
+  - .github/
+  - .idea/
+  - tests/unit/
+  - tests/roles/
+skip_list:
+  - name[casing]
+  - name[template]
+  - role-name
+  - var-naming[pattern]
+  - var-naming[no-role-prefix]
+  - unknown-module
+warn_list:
+  - yaml[line-length]

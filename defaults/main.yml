@@ -13,3 +13,6 @@
 
 # moira_auth_login must contain value for key X-Webauth-User
 # moira_auth_login: admin
+
+# Pinned version of moira-python-client installed by the role
+moira_python_client_version: "5.2.1"

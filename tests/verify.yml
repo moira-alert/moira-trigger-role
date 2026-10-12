@@ -1,0 +1,43 @@
+- name: verify moira-trigger-role against the stateful fake api
+  hosts: serviceName
+  connection: local
+  gather_facts: false
+  vars:
+    moira_api_url: http://localhost:8081/api
+    moira_verify_triggers: '{{ ServiceNameTriggers }}'
+    moira_cleanup_triggers: '{{ ServiceNameTriggers | map("combine", {"state": "absent"}) | list }}'
+
+  tasks:
+    - name: remove any triggers left over from a previous run
+      include_role:
+        name: moira-alert.moira-trigger-role
+      vars:
+        moira_api: '{{ moira_api_url }}'
+        moira_triggers: '{{ moira_cleanup_triggers }}'
+        dry_run: false
+
+    - name: create triggers
+      include_role:
+        name: moira-alert.moira-trigger-role
+      vars:
+        moira_api: '{{ moira_api_url }}'
+        moira_triggers: '{{ moira_verify_triggers }}'
+        dry_run: false
+
+    - name: assert that triggers were changed on the first run
+      ansible.builtin.assert:
+        that:
+          - moira_manage_result.changed
+
+    - name: apply triggers once more
+      include_role:
+        name: moira-alert.moira-trigger-role
+      vars:
+        moira_api: '{{ moira_api_url }}'
+        moira_triggers: '{{ moira_verify_triggers }}'
+        dry_run: false
+
+    - name: assert that the second run is idempotent
+      ansible.builtin.assert:
+        that:
+          - not (moira_manage_result.changed)

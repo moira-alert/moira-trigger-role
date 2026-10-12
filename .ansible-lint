@@ -6,11 +6,11 @@ exclude_paths:
   - tests/unit/
   - tests/roles/
 skip_list:
-  - name[casing]
-  - name[template]
-  - role-name
-  - var-naming[pattern]
-  - var-naming[no-role-prefix]
+  # The custom moira_trigger module lives in library/ and cannot be resolved
+  # by ansible-playbook --syntax-check unless the role is installed.
   - unknown-module
 warn_list:
+  # The published role keeps the legacy old-galaxy name (hyphens instead of
+  # underscores), which cannot satisfy role-name's naming regex.
+  - role-name
   - yaml[line-length]

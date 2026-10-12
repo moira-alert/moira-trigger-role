@@ -43,8 +43,8 @@ description:
 author:
     - 'SKB Kontur'
 requirements:
-    - 'python >= 2.7'
-    - 'moira-python-client >= 2.0'
+    - 'python >= 3.6'
+    - 'moira-python-client >= 5.2.1'
 version_added: '1.0.0'
 options:
   api_url:

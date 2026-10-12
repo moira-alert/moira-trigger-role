@@ -103,3 +103,6 @@ ENV/
 
 # ansible roles symlinked by tests/Makefile
 tests/roles/
+
+# JetBrains IDEs
+.idea/
